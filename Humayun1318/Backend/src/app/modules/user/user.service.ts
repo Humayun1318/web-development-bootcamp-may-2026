@@ -4,6 +4,7 @@ import {
   UserStatus,
 } from './user.constants';
 import {
+  IAuthTokens,
   IChangePasswordPayload,
   IRegisterPayload,
   IUpdateProfilePayload,
@@ -13,6 +14,7 @@ import {
 import AppError from '../../errorHelpers/AppError';
 import User from './user.models';
 import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
+import { createUserTokens } from '../../utils/userTokens';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // register
@@ -32,48 +34,15 @@ const register = async (
   // The pre-save hook hashes the password — we pass the plain-text value here.
   const user = await User.create(payload);
 
-  // const tokens: IAuthTokens = {
-  //   accessToken: generateAccessToken(user._id, user.role),
-  //   refreshToken: generateRefreshToken(user._id),
-  // };
+  if (!user) {
+    throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to create user');
+  }
 
-  return { user, tokens: null };
+  const tokens: IAuthTokens = createUserTokens(user)
+
+  return { user, tokens };
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// login
-// ─────────────────────────────────────────────────────────────────────────────
-// const login = async (
-//   payload: ILoginPayload,
-// ): Promise<{ user: Omit<IUserDocument, 'password'>; tokens: IAuthTokens }> => {
-//   // findByEmail includes .select('+password') — the only place we need the hash.
-//   const user = await User.findByEmail(payload.email);
-
-//   // Use a generic error message for both "not found" and "wrong password"
-//   // to prevent user enumeration attacks.
-//   if (!user) {
-//     throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'Invalid email or password');
-//   }
-
-//   if (!user.isLoginAllowed()) {
-//     throw new AppError(
-//       HTTP_STATUS.FORBIDDEN,
-//       'Your account has been suspended. Please contact support.',
-//     );
-//   }
-
-//   const passwordMatch = await user.comparePassword(payload.password);
-//   if (!passwordMatch) {
-//     throw new AppError(HTTP_STATUS.UNAUTHORIZED, 'Invalid email or password');
-//   }
-
-//   const tokens: IAuthTokens = {
-//     accessToken: generateAccessToken(user._id, user.role),
-//     refreshToken: generateRefreshToken(user._id),
-//   };
-
-//   return { user: sanitiseUser(user.toObject()), tokens };
-// };
 
 // ─────────────────────────────────────────────────────────────────────────────
 // getMe — fetch the requesting user's own profile
@@ -97,8 +66,12 @@ const updateProfile = async (
 ): Promise<IUserDocument> => {
   const user = await User.findById(userId);
 
-  if (!user || user.status === UserStatus.DELETED) {
+  if (!user) {
     throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found');
+  }
+
+  if (user?.status === UserStatus.DELETED) {
+    throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Your account has been deleted. Profile cannot be updated.');
   }
 
   Object.assign(user, payload);

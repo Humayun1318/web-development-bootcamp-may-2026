@@ -4,12 +4,16 @@ import { Types } from 'mongoose';
 import catchAsync from '../../utils/catchAsync';
 import { sendResponse } from '../../utils/sendResponse';
 import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
+import { setAuthCookie } from '../../utils/setAuthCookie';
 
 // ─────────────────────────────────────────────
 // Register
 // ─────────────────────────────────────────────
 const register = catchAsync(async (req: Request, res: Response) => {
   const result = await userService.register(req.body);
+
+  // Set auth tokens in HTTP-only cookies
+  setAuthCookie(res, result.tokens);
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.CREATED,
