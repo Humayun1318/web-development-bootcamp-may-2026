@@ -8,7 +8,7 @@ import {
     UserStatus,
     USER_VALIDATION,
 } from './user.constants';
-import { AuthProvider, IUser, IUserDocument, IUserModel } from './user.interface';
+import { AuthProvider, IUserDocument, IUserModel } from './user.interface';
 import { envVars } from '../../config/env';
 import { sanitizeDocument } from './user.utils';
 

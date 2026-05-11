@@ -4,7 +4,7 @@ import { validateRequest } from '../../middlewares/validateRequest';
 import { userValidation } from './user.validation';
 import { authenticate } from '../../middlewares/authenticate';
 import { UserRole } from './user.constants';
-// import checkAuth from '../../middlewares/checkAuth';
+
 
 
 const router = Router();
@@ -60,7 +60,7 @@ router.get(
 
 router.patch(
     '/:id/status',
-    // authenticate(UserRole.ADMIN),
+    authenticate(UserRole.ADMIN),
     validateRequest(userValidation.updateUserStatusSchema),
     userController.updateUserStatus,
 );

@@ -4,6 +4,7 @@ import { validateRequest } from '../../middlewares/validateRequest';
 import passport from 'passport';
 import { authValidation } from './auth.validation';
 import { UserRole } from '../user/user.constants';
+import { authenticate } from '../../middlewares/authenticate';
 
 
 const router = Router();
@@ -20,6 +21,12 @@ router.post(
     authController.getNewAccessTokenUsingRefreshToken,
 );
 router.post('/logout', authController.logout);
+
+router.post("/set-password",
+    authenticate(UserRole.USER, UserRole.ADMIN),
+    validateRequest(authValidation.setPasswordSchema),
+    authController.setPassword
+);
 
 
 

@@ -8,6 +8,7 @@ import { setAuthCookie } from "../../utils/setAuthCookie";
 import { sendResponse } from "../../utils/sendResponse";
 import { authService } from "./auth.service";
 import { envVars } from "../../config/env";
+import { getUserIdFromReq } from "../../utils/getUserIdFromReq";
 
 
 const credentialsLogin = catchAsync(
@@ -159,9 +160,24 @@ const googleCallbackController = catchAsync(
   },
 );
 
+const setPassword = catchAsync(async (req: Request, res: Response, _next: NextFunction) => {
+
+  const userId = getUserIdFromReq(req);
+  const { password } = req.body;
+
+  await authService.setPassword(userId, password);
+
+  sendResponse(res, {
+    success: true,
+    statusCode: HTTP_STATUS.OK,
+    message: "Password Changed Successfully",
+    data: null,
+  })
+})
 export const authController = {
   createAuth: credentialsLogin,
   getNewAccessTokenUsingRefreshToken,
   logout,
   googleCallbackController,
+  setPassword
 };
