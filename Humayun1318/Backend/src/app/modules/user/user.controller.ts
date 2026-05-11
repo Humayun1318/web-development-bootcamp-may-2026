@@ -1,17 +1,145 @@
 import { Request, Response } from 'express';
-import catchAsync from '../../utils/catchAsync';
 import { userService } from './user.service';
+import { Types } from 'mongoose';
+import catchAsync from '../../utils/catchAsync';
+import { sendResponse } from '../../utils/sendResponse';
+import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
 
-const createUser = catchAsync(async (req: Request, res: Response) => {});
-const getAllUser = catchAsync(async (req: Request, res: Response) => {});
-const getUserById = catchAsync(async (req: Request, res: Response) => {});
-const updateUser = catchAsync(async (req: Request, res: Response) => {});
-const deleteUser = catchAsync(async (req: Request, res: Response) => {});
+// ─────────────────────────────────────────────
+// Register
+// ─────────────────────────────────────────────
+const register = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.register(req.body);
 
+  sendResponse(res, {
+    statusCode: HTTP_STATUS.CREATED,
+    success: true,
+    message: 'User registered successfully',
+    data: result,
+  });
+});
+
+// ─────────────────────────────────────────────
+// Get My Profile
+// ─────────────────────────────────────────────
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.getMe(req.user._id as Types.ObjectId);
+
+  sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+    success: true,
+    message: 'Profile retrieved successfully',
+    data: result,
+  });
+});
+
+// ─────────────────────────────────────────────
+// Update Profile
+// ─────────────────────────────────────────────
+const updateProfile = catchAsync(async (req: Request, res: Response) => {
+  const userId = req.params.id! as unknown as Types.ObjectId;
+  const result = await userService.updateProfile(
+    userId,
+    req.body,
+  );
+
+  sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+    success: true,
+    message: 'Profile updated successfully',
+    data: result,
+  });
+});
+
+// ─────────────────────────────────────────────
+// Change Password
+// ─────────────────────────────────────────────
+const changePassword = catchAsync(async (req: Request, res: Response) => {
+  await userService.changePassword(
+    req.user._id as Types.ObjectId,
+    req.body,
+  );
+
+  sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+    success: true,
+    message: 'Password changed successfully',
+    data: null,
+  });
+});
+
+// ─────────────────────────────────────────────
+// Delete Own Account
+// ─────────────────────────────────────────────
+const deleteOwnAccount = catchAsync(async (req: Request, res: Response) => {
+  await userService.deleteOwnAccount(
+    req.user._id as Types.ObjectId,
+    req.body.password,
+  );
+
+  sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+    success: true,
+    message: 'Account deleted successfully',
+    data: null,
+  });
+});
+
+// ─────────────────────────────────────────────
+// Admin: Get All Users
+// ─────────────────────────────────────────────
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.getAllUsers(req.query);
+
+  sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+    success: true,
+    message: 'Users retrieved successfully',
+    data: result,
+  });
+});
+
+// ─────────────────────────────────────────────
+// Admin: Get User By ID
+// ─────────────────────────────────────────────
+const getUserById = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.getUserById(req.params.id!);
+
+  sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+    success: true,
+    message: 'User retrieved successfully',
+    data: result,
+  });
+});
+
+// ─────────────────────────────────────────────
+// Admin: Update User Status
+// ─────────────────────────────────────────────
+const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
+  const result = await userService.updateUserStatus(
+    req.params.id!,
+    req.body.status,
+  );
+
+  sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+    success: true,
+    message: 'User status updated successfully',
+    data: result,
+  });
+});
+
+// ─────────────────────────────────────────────
+// EXPORT
+// ─────────────────────────────────────────────
 export const userController = {
-  createUser,
-  getAllUser,
+  register,
+  getMe,
+  updateProfile,
+  changePassword,
+  deleteOwnAccount,
+  getAllUsers,
   getUserById,
-  updateUser,
-  deleteUser,
+  updateUserStatus,
 };
