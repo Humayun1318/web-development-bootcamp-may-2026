@@ -4,6 +4,7 @@ import {
     SUPPORTED_TIMEZONES,
     UserStatus,
     USER_VALIDATION,
+    UserRole,
 } from './user.constants';
 
 // ---------------------------------------------------------------------------
@@ -115,23 +116,8 @@ export const registerSchema = z.object({
     password: passwordSchema,
     currency: currencySchema,
     timezone: timezoneSchema,
+    role: z.enum(Object.values(UserRole) as [string, ...string[]]).optional(),
 });
-
-
-// ---------------------------------------------------------------------------
-// Login Schema
-// ---------------------------------------------------------------------------
-export const loginSchema = z.object({
-    email: emailSchema,
-    password: z
-        .string({
-            error: (issue) =>
-                issue.input === undefined
-                    ? 'Password is required'
-                    : 'Password must be a string',
-        })
-        .min(1, { message: 'Password is required' }),
-})
 
 
 // ---------------------------------------------------------------------------
@@ -221,7 +207,6 @@ export const updateUserStatusSchema = z.object({
 
 export const userValidation = {
     registerSchema,
-    loginSchema,
     updateProfileSchema,
     changePasswordSchema,
     updateUserStatusSchema,

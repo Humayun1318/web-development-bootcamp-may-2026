@@ -3,6 +3,8 @@ import {
   UserStatus,
 } from './user.constants';
 import {
+  AuthProvider,
+  IAuthEntry,
   IAuthTokens,
   IChangePasswordPayload,
   IRegisterPayload,
@@ -19,7 +21,7 @@ import { createUserTokens } from '../../utils/userTokens';
 // register
 // ─────────────────────────────────────────────────────────────────────────────
 const register = async (
-  payload: IRegisterPayload,
+  payload: (IRegisterPayload & { auths?: IAuthEntry[] }),
 ) => {
   // Check for duplicate email before hitting the unique index.
   const emailTaken = await User.isEmailTaken(payload.email);
@@ -27,6 +29,30 @@ const register = async (
     throw new AppError(
       HTTP_STATUS.CONFLICT,
       'An account with this email address already exists',
+    );
+  }
+
+  // Normalize auths: set providerId to email
+  payload.auths = payload?.auths?.map(() => ({
+    provider: AuthProvider.LOCAL,
+    providerId: payload?.email,
+  })) || [
+    {
+      provider: AuthProvider.LOCAL,
+      providerId: payload?.email,
+    },
+  ];
+
+  // //check if CREDENTIALS provider exists
+  const hasCredentialsProvider = payload.auths.some(
+    (auth) => auth.provider === AuthProvider.LOCAL,
+  );
+
+  // local provider must have password
+  if (hasCredentialsProvider && !payload.password) {
+    throw new AppError(
+      HTTP_STATUS.BAD_REQUEST,
+      'Password is required for credentials authentication',
     );
   }
 

@@ -8,8 +8,30 @@ import {
     UserStatus,
     USER_VALIDATION,
 } from './user.constants';
-import { IUserDocument, IUserModel } from './user.interface';
+import { AuthProvider, IUser, IUserDocument, IUserModel } from './user.interface';
 import { envVars } from '../../config/env';
+import { sanitizeDocument } from './user.utils';
+
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// AUTH ENTRY SUB-SCHEMA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+const authEntrySchema = new Schema(
+  {
+    provider: {
+      type:     String,
+      enum:     Object.values(AuthProvider),
+      required: [true, 'Auth provider is required'],
+    },
+    providerId: {
+      type:     String,
+      required: [true, 'Provider ID is required'],
+      trim:     true,
+    },
+  },
+  { _id: false, versionKey: false },
+);
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Schema definition
@@ -80,6 +102,11 @@ const userSchema = new Schema<IUserDocument, IUserModel>(
             default: UserRole.USER,
         },
 
+        auths: {
+            type: [authEntrySchema],
+            required: [true, 'At least one auth provider is required'],
+        },
+
         status: {
             type: String,
             enum: {
@@ -120,17 +147,13 @@ const userSchema = new Schema<IUserDocument, IUserModel>(
         // -------------------------------------------------------------------------
         toJSON: {
             virtuals: true,
-            transform(_doc, ret) {
-                const sanitized = ret as any;
-                sanitized.id = sanitized._id;
-                delete sanitized._id;
-                delete sanitized.__v;
-                delete sanitized.password;
-                return sanitized;
-            },
+            transform: sanitizeDocument,
         },
 
-        toObject: { virtuals: true },
+        toObject: {
+            virtuals: true,
+            transform: sanitizeDocument,
+        },
     },
 );
 
@@ -176,6 +199,17 @@ userSchema.methods.comparePassword = async function (
  */
 userSchema.methods.isLoginAllowed = function (): boolean {
     return this.status === UserStatus.ACTIVE;
+};
+
+/**
+ *   user.hasAuthProvider(AuthProvider.LOCAL)  → password have or not
+ *   user.hasAuthProvider(AuthProvider.GOOGLE) → Google linked or not
+ */
+userSchema.methods.hasAuthProvider = function (
+  this: IUserDocument,
+  provider: AuthProvider,
+): boolean {
+  return this.auths.some((entry) => entry.provider === provider);
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

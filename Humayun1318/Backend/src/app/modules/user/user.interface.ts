@@ -6,6 +6,18 @@ import {
   UserStatusType,
 } from './user.constants';
 
+// authProvider types
+export enum AuthProvider {
+  LOCAL  = 'local', 
+  GOOGLE = 'google',  
+}
+
+// authentication providers
+export interface IAuthEntry {
+  provider:   AuthProvider;
+  providerId: string;
+}
+
 // ---------------------------------------------------------------------------
 // Core domain shape — plain data, no Mongoose noise.
 // ---------------------------------------------------------------------------
@@ -20,6 +32,7 @@ export interface IUser {
   role: UserRoleType;       // user | admin
   status: UserStatusType;   // active | suspended | deleted
 
+  auths: IAuthEntry[];
   currency: SupportedCurrency;
 
   // IANA timezone string — used for grouping transactions by "day" correctly
@@ -42,6 +55,7 @@ export interface IUserDocument extends IUser, Document {
 
   comparePassword(candidatePassword: string): Promise<boolean>;
   isLoginAllowed(): boolean;
+  hasAuthProvider(provider: AuthProvider): boolean;
 }
 
 // ---------------------------------------------------------------------------
