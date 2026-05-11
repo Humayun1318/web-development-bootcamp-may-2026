@@ -1,4 +1,3 @@
-import { Types } from 'mongoose';
 import {
   USER_QUERY_DEFAULTS,
   UserStatus,
@@ -38,6 +37,7 @@ const register = async (
     throw new AppError(HTTP_STATUS.INTERNAL_SERVER_ERROR, 'Failed to create user');
   }
 
+  // Generate auth tokens for the newly registered user.
   const tokens: IAuthTokens = createUserTokens(user)
 
   return { user, tokens };
@@ -47,11 +47,15 @@ const register = async (
 // ─────────────────────────────────────────────────────────────────────────────
 // getMe — fetch the requesting user's own profile
 // ─────────────────────────────────────────────────────────────────────────────
-const getMe = async (userId: Types.ObjectId): Promise<IUserDocument> => {
+const getMe = async (userId: string): Promise<IUserDocument> => {
   const user = await User.findById(userId);
 
-  if (!user || user.status === UserStatus.DELETED) {
+  if (!user) {
     throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found');
+  }
+
+  if (user?.status === UserStatus.DELETED) {
+    throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Your account has been deleted. please contact support.');
   }
 
   return user;
@@ -61,7 +65,7 @@ const getMe = async (userId: Types.ObjectId): Promise<IUserDocument> => {
 // updateProfile
 // ─────────────────────────────────────────────────────────────────────────────
 const updateProfile = async (
-  userId: Types.ObjectId,
+  userId: string,
   payload: IUpdateProfilePayload,
 ): Promise<IUserDocument> => {
   const user = await User.findById(userId);
@@ -84,7 +88,7 @@ const updateProfile = async (
 // changePassword
 // ─────────────────────────────────────────────────────────────────────────────
 const changePassword = async (
-  userId: Types.ObjectId,
+  userId: string,
   payload: IChangePasswordPayload,
 ): Promise<void> => {
   // Explicitly select password because it has select:false on the schema.
@@ -108,9 +112,13 @@ const changePassword = async (
 // deleteOwnAccount — soft delete by the user themselves
 // ─────────────────────────────────────────────────────────────────────────────
 const deleteOwnAccount = async (
-  userId: Types.ObjectId,
+  userId: string,
   password: string,
 ): Promise<void> => {
+
+  if (!password) {
+    throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Password is required to delete account');
+  }
   const user = await User.findById(userId).select('+password');
 
   if (!user) {

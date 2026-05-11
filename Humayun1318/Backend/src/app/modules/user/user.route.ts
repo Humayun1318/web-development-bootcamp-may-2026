@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { userController } from './user.controller';
 import { validateRequest } from '../../middlewares/validateRequest';
 import { userValidation } from './user.validation';
+import { authenticate } from '../../middlewares/authenticate';
+import { UserRole } from './user.constants';
 // import checkAuth from '../../middlewares/checkAuth';
 
 
@@ -17,26 +19,27 @@ router.post('/register', validateRequest(userValidation.registerSchema), userCon
 // ─────────────────────────────────────────────
 router.get(
     '/me',
-    //   checkAuth(UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN),
+    authenticate(UserRole.USER, UserRole.ADMIN),
     userController.getMe,
 );
 
 router.patch(
-    '/me',
-    //   checkAuth(UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN),
+    '/update-profile',
+    authenticate(UserRole.USER, UserRole.ADMIN),
     validateRequest(userValidation.updateProfileSchema),
     userController.updateProfile,
 );
 
 router.patch(
     '/change-password',
-    //   checkAuth(UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN),
+    authenticate(UserRole.USER, UserRole.ADMIN),
+    validateRequest(userValidation.changePasswordSchema),
     userController.changePassword,
 );
 
 router.delete(
-    '/me',
-    //   checkAuth(UserRole.USER, UserRole.ADMIN, UserRole.SUPER_ADMIN),
+    '/delete-account',
+    authenticate(UserRole.USER, UserRole.ADMIN),
     userController.deleteOwnAccount,
 );
 
@@ -45,19 +48,20 @@ router.delete(
 // ─────────────────────────────────────────────
 router.get(
     '/',
-    //   checkAuth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+    authenticate(UserRole.ADMIN),
     userController.getAllUsers,
 );
 
 router.get(
     '/:id',
-    //   checkAuth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+    authenticate(UserRole.ADMIN),
     userController.getUserById,
 );
 
 router.patch(
     '/:id/status',
-    //   checkAuth(UserRole.ADMIN, UserRole.SUPER_ADMIN),
+    // authenticate(UserRole.ADMIN),
+    validateRequest(userValidation.updateUserStatusSchema),
     userController.updateUserStatus,
 );
 

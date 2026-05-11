@@ -44,7 +44,7 @@ export const createNewAccessTokenUsingRefreshToken = async (refreshToken: string
     }
 
     if (!user.isLoginAllowed()) {
-        throw new AppError(HTTP_STATUS.FORBIDDEN, 'Your account is not allowed to login. Please contact support.');
+        throw new AppError(HTTP_STATUS.FORBIDDEN, 'Your account is not allowed');
     }
 
     const newAccessToken = generateToken(

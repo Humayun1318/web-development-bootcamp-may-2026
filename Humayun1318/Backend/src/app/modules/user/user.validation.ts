@@ -179,49 +179,43 @@ export const updateProfileSchema = z
 // ---------------------------------------------------------------------------
 // Change Password Schema
 // ---------------------------------------------------------------------------
-export const changePasswordSchema = z.object({
-    body: z
-        .object({
-            currentPassword: z
-                .string({
-                    error: (issue) =>
-                        issue.input === undefined
-                            ? 'Current password is required'
-                            : 'Current password must be a string',
-                })
-                .min(1, {
-                    message: 'Current password is required',
-                }),
+export const changePasswordSchema = z
+    .object({
+        currentPassword: z
+            .string({
+                error: (issue) =>
+                    issue.input === undefined
+                        ? 'Current password is required'
+                        : 'Current password must be a string',
+            })
+            .min(1, {
+                message: 'Current password is required',
+            }),
 
-            newPassword: passwordSchema,
-        })
-        .refine(
-            (data) => data.currentPassword !== data.newPassword,
-            {
-                message:
-                    'New password must be different from the current password',
-                path: ['newPassword'],
-            },
-        ),
-});
+        newPassword: passwordSchema,
+    })
+    .refine(
+        (data) => data.currentPassword !== data.newPassword,
+        {
+            message:
+                'New password must be different from the current password',
+            path: ['newPassword'],
+        },
+    )
+
 
 // ---------------------------------------------------------------------------
 // Update User Status Schema
 // ---------------------------------------------------------------------------
 export const updateUserStatusSchema = z.object({
-    params: z.object({
-        id: mongoIdSchema,
-    }),
+    status: z.enum(
+        [...Object.values(UserStatus)],
+        {
+            message: 'Status must be active, suspended, or deleted',
+        },
+    ),
+})
 
-    body: z.object({
-        status: z.enum(
-            [...Object.values(UserStatus)],
-            {
-                message: 'Status must be active, suspended, or deleted',
-            },
-        ),
-    }),
-});
 
 
 

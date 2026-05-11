@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 import { userService } from './user.service';
-import { Types } from 'mongoose';
 import catchAsync from '../../utils/catchAsync';
 import { sendResponse } from '../../utils/sendResponse';
 import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
 import { setAuthCookie } from '../../utils/setAuthCookie';
+import { getUserIdFromReq } from '../../utils/getUserIdFromReq';
 
 // ─────────────────────────────────────────────
 // Register
@@ -27,7 +27,8 @@ const register = catchAsync(async (req: Request, res: Response) => {
 // Get My Profile
 // ─────────────────────────────────────────────
 const getMe = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.getMe(req.user._id as Types.ObjectId);
+  const userId = getUserIdFromReq(req)
+  const result = await userService.getMe(userId);
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.OK,
@@ -41,7 +42,7 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
 // Update Profile
 // ─────────────────────────────────────────────
 const updateProfile = catchAsync(async (req: Request, res: Response) => {
-  const userId = req.params.id! as unknown as Types.ObjectId;
+  const userId = getUserIdFromReq(req);
   const result = await userService.updateProfile(
     userId,
     req.body,
@@ -60,7 +61,7 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 const changePassword = catchAsync(async (req: Request, res: Response) => {
   await userService.changePassword(
-    req.user._id as Types.ObjectId,
+    getUserIdFromReq(req),
     req.body,
   );
 
@@ -77,7 +78,7 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 const deleteOwnAccount = catchAsync(async (req: Request, res: Response) => {
   await userService.deleteOwnAccount(
-    req.user._id as Types.ObjectId,
+    getUserIdFromReq(req),
     req.body.password,
   );
 
