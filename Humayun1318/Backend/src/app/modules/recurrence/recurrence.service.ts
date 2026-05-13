@@ -3,9 +3,10 @@ import { QueryBuilder } from '../../builder/QueryBuilder';
 import AppError from '../../errorHelpers/AppError';
 import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
 import Category from '../category/category.models';
+import { normalizeCategoryName } from '../category/category.utils';
 import Transaction from '../transaction/transaction.models';
 import User from '../user/user.models';
-import { RECURRENCE_QUERY_DEFAULTS, RECURRENCE_SEARCHABLE_FIELDS } from './recurrence.constants';
+import { RECURRENCE_SEARCHABLE_FIELDS } from './recurrence.constants';
 import {
   ICreateRecurrencePayload,
   IRecurrenceDocument,
@@ -65,29 +66,7 @@ const getAllRecurrences = async (
   userId: string,
   query: IRecurrenceQuery,
 ) => {
-  // const {
-  //   isActive,
-  //   frequency,
-  //   page = RECURRENCE_QUERY_DEFAULTS.PAGE,
-  //   limit = RECURRENCE_QUERY_DEFAULTS.LIMIT,
-  // } = query;
 
-  // const sanitisedLimit = Math.min(limit, RECURRENCE_QUERY_DEFAULTS.MAX_LIMIT);
-  // const skip = (page - 1) * sanitisedLimit;
-
-  // const filter: Record<string, unknown> = { userId };
-  // if (isActive !== undefined) filter.isActive = isActive;
-  // if (frequency) filter.frequency = frequency;
-
-  // const [data, total] = await Promise.all([
-  //   Recurrence.find(filter)
-  //     .populate({ path: 'categoryId', select: 'name type icon colorHex' })
-  //     .sort({ nextDueDate: 1 }) // soonest due first — most useful default ordering
-  //     .skip(skip)
-  //     .limit(sanitisedLimit)
-  //     .lean<IRecurrenceDocument[]>(),
-  //   Recurrence.countDocuments(filter),
-  // ]);
   const rawQuery = {
     ...query,
     userId
@@ -204,6 +183,18 @@ const createTransactionsForDueRecurrences = async (): Promise<{
 
   for (const recurrence of dueRecurrences) {
     try {
+      const category = await Category.findOne({
+        _id: recurrence?.categoryId,
+        $or: [{ userId: recurrence?.userId }, { isSystem: true }],
+        isActive: true,
+      }).lean();
+
+      if (!category) {
+        throw new AppError(
+          HTTP_STATUS.NOT_FOUND,
+          'Category not found or not accessible',
+        );
+      }
       // -----------------------------------------------------------------------
       // Create the transaction.
       // recurrenceId links back to the rule that generated it.
@@ -213,6 +204,7 @@ const createTransactionsForDueRecurrences = async (): Promise<{
         userId: recurrence?.userId,
         categoryId: recurrence?.categoryId,
         type: recurrence?.type,
+        categoryName: normalizeCategoryName(category?.name),
         amount: recurrence?.amount,
         currency: recurrence?.currency,
         description: recurrence.description ?? `Auto: ${recurrence.frequency} transaction`,

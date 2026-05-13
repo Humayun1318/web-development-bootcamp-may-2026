@@ -2,6 +2,7 @@ import { Server } from "http";
 import app from "./app";
 import mongoose from "mongoose";
 import { envVars } from "./app/config/env";
+import { registerRecurrenceCron, stopRecurrenceCron } from "./app/jobs/recurrence.cron";
 
 let server: Server;
 
@@ -11,6 +12,8 @@ const startServer = async () => {
     await mongoose.connect(envVars.DB_URL);
 
     console.log('Connected to DB!!......');
+
+    registerRecurrenceCron();
 
     // Start Express server on the configured port
     server = app.listen(envVars.PORT, () => {
@@ -31,6 +34,7 @@ const startServer = async () => {
 (async () => {
   // Start the Express server and connect to MongoDB
   await startServer();
+  
 })();
 
 /**
@@ -69,6 +73,8 @@ process.on('SIGTERM', () => {
 
   // Check if server is initialized before attempting to close
   if (server) {
+    // cron stop if system shutdown
+    stopRecurrenceCron();
     // Close server and exit process after all connections are closed
     server.close(() => {
       console.log('Server closed gracefully');

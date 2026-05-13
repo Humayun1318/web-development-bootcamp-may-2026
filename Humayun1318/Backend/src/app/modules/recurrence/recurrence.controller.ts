@@ -1,7 +1,6 @@
 
 import { Request, Response } from 'express';
 import { recurrenceService } from './recurrence.service';
-import { IRecurrenceQuery } from './recurrence.interface';
 import catchAsync from '../../utils/catchAsync';
 import { getUserIdFromReq } from '../../utils/getUserIdFromReq';
 import { sendResponse } from '../../utils/sendResponse';

@@ -1,6 +1,6 @@
 
 import { Document, Model, Types } from 'mongoose';
-import { TransactionType, PaymentMethod, TransactionSortField, SortOrder } from './transaction.constants';
+import { TransactionType, PaymentMethod } from './transaction.constants';
 
 // ---------------------------------------------------------------------------
 // Core domain shape

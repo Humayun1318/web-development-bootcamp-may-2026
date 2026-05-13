@@ -1,14 +1,3 @@
-// ─────────────────────────────────────────────────────────────────────────────
-// recurrence.cron.ts
-//
-// Cron job scheduler for the recurrence module.
-// This file has ONE responsibility: register the schedule and call the service.
-// Zero business logic lives here — all DB work is in recurrence.service.ts.
-//
-// Package required: node-cron
-//   npm install node-cron
-//   npm install --save-dev @types/node-cron
-// ─────────────────────────────────────────────────────────────────────────────
 
 import cron from 'node-cron';
 import { RECURRENCE_MASTER_CRON } from '../modules/recurrence/recurrence.constants';
@@ -19,16 +8,6 @@ import { recurrenceService } from '../modules/recurrence/recurrence.service';
 //
 // Call this function ONCE inside your app.ts / server.ts AFTER the MongoDB
 // connection is established.
-//
-// Example placement in server.ts:
-//
-//   mongoose.connect(config.databaseUrl).then(() => {
-//     console.log('DB connected');
-//     registerRecurrenceCron();          // ← add this line
-//     app.listen(config.port, () => {
-//       console.log(`Server running on port ${config.port}`);
-//     });
-//   });
 //
 // WHY after DB connect?
 //   The cron fires at midnight.  If the server has not connected to MongoDB yet
@@ -58,7 +37,7 @@ export const registerRecurrenceCron = (): void => {
 
         console.log(
           `[RecurrenceCron] Done — processed: ${result.processed}, ` +
-            `created: ${result.created}, failed: ${result.failed}`,
+          `created: ${result.created}, failed: ${result.failed}`,
         );
 
         // Log individual failures without crashing — the next run will retry
@@ -76,10 +55,12 @@ export const registerRecurrenceCron = (): void => {
       }
     },
     {
-      scheduled: true,
       timezone: 'Asia/Dhaka', // ← change to your deployment timezone
     },
   );
+
+  // Ensure the cron job starts immediately after registration.
+  task.start();
 
   // Log confirmation so server startup logs are clear.
   console.log(

@@ -94,7 +94,7 @@ const getAllTransactions = async (
     userId: toObjectId(userId),
   } as unknown as Record<string, string>;
 
-  console.log('Building query with:', rawQuery);
+  // console.log('Building query with:', rawQuery);
 
   const queryBuilder = new QueryBuilder(
     Transaction.find().populate({
