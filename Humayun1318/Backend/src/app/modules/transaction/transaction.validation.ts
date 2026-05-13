@@ -1,7 +1,6 @@
 import { z } from 'zod';
 import {
     PAYMENT_METHOD,
-    SORT_ORDER,
     TRANSACTION_SORT_FIELDS,
     TRANSACTION_TYPE,
     TRANSACTION_VALIDATION,
@@ -54,7 +53,7 @@ const paymentMethodSchema = z
 // ---------------------------------------------------------------------------
 // Date Schema (ISO string or Date object)
 // ---------------------------------------------------------------------------
-const dateSchema = z.coerce.date({
+export const dateSchema = z.coerce.date({
     error: (issue) =>
         issue.input === undefined
             ? 'Transaction date is required'

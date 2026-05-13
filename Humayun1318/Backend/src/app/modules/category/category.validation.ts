@@ -1,6 +1,8 @@
 
 import { z } from 'zod';
-import { CATEGORY_ICON, CATEGORY_TYPE, CATEGORY_VALIDATION } from './category.constants';
+import { CATEGORY_ICON, CATEGORY_SORT_FIELDS, CATEGORY_TYPE, CATEGORY_VALIDATION } from './category.constants';
+
+
 
 
 // ---------------------------------------------------------------------------
@@ -111,6 +113,9 @@ const getCategoriesQuerySchema = z.object({
         .transform(Number)
         .refine((n) => n > 0, 'limit must be a positive integer')
         .optional(),
+    searchTerm: z.string().trim().max(100).optional(),
+    // Sorting
+    sort: z.enum(CATEGORY_SORT_FIELDS).optional(),
 })
 
 

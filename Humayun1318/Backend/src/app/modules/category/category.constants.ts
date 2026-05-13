@@ -1,4 +1,14 @@
 
+export const CATEGORY_SEARCHABLE_FIELDS = ["name", "type"];
+export const CATEGORY_SORT_FIELDS = [
+  'name',
+  '-name',
+  'createdAt',
+  '-createdAt',
+  "type",
+  "-type",
+  
+] as const;
 // ---------------------------------------------------------------------------
 // Transaction direction — a category always belongs to one side of the ledger.
 // Stored as a string in MongoDB so queries remain human-readable in Atlas.

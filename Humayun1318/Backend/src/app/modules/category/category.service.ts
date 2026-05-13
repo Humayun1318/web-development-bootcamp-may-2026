@@ -1,8 +1,5 @@
 
 import {
-  CATEGORY_QUERY_DEFAULTS,
-} from './category.constants';
-import {
   ICategoryDocument,
   ICategoryQuery,
   ICreateCategoryPayload,
@@ -12,6 +9,8 @@ import Category from './category.models';
 import { normalizeCategoryName } from './category.utils';
 import AppError from '../../errorHelpers/AppError';
 import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
+import { QueryBuilder } from '../../builder/QueryBuilder';
+import { toObjectId } from '../../utils/toObjectId';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Creates a user-defined custom category.
@@ -66,42 +65,36 @@ const createCategory = async (
 const getAllCategories = async (
   userId: string,
   query: ICategoryQuery,
-): Promise<{ data: ICategoryDocument[]; total: number }> => {
-  const {
-    type,
-    isActive,
-    includeSystem = true,
-    page = CATEGORY_QUERY_DEFAULTS.PAGE,
-    limit = CATEGORY_QUERY_DEFAULTS.LIMIT,
-  } = query;
+) => {
 
-  const sanitisedLimit = Math.min(limit, CATEGORY_QUERY_DEFAULTS.MAX_LIMIT);
-  const skip = (page - 1) * sanitisedLimit;
+  const rawQuery = {
+    ...query
+  } as unknown as Record<string, string>
 
-  // Build filter: always scope to the requesting user OR system-wide.
-  const filter: Record<string, unknown> = {
+  const baseFilter = {
     $or: [
-      { userId },
-      ...(includeSystem ? [{ isSystem: true }] : []),
+      { userId: toObjectId(userId) },
+      { isSystem: true },
     ],
   };
 
-  if (type) filter.type = type;
+  console.log("raw query", rawQuery, userId)
 
-  // Only filter by isActive when explicitly requested.
-  // Default: return both active and inactive so users can manage their list.
-  if (isActive !== undefined) filter.isActive = isActive;
+  const queryBuild = new QueryBuilder(Category.find(baseFilter).populate({
+    path: "userId",
+    select: "name email",
+  }), rawQuery)
 
-  const [data, total] = await Promise.all([
-    Category.find(filter)
-      .sort({ isSystem: -1, name: 1 }) // system first, then alphabetical
-      .skip(skip)
-      .limit(sanitisedLimit)
-      .lean<ICategoryDocument[]>(),
-    Category.countDocuments(filter),
+  const built = queryBuild
+    // .search(CATEGORY_SEARCHABLE_FIELDS)
+    .sort()
+    .paginate()
+
+  const [data, meta] = await Promise.all([
+    built.build().lean<ICategoryDocument[]>(),
+    queryBuild.getMeta(),
   ]);
-
-  return { data, total };
+  return { data, meta };
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

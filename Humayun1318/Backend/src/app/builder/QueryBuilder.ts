@@ -1,5 +1,5 @@
 import { FilterQuery, Query } from "mongoose";
-export const excludeField = ["searchTerm", "sort", "fields", "page", "limit", "startDate", "endDate", "minAmount", "maxAmount"]
+export const excludeField = ["searchTerm", "sort", "fields", "page", "limit", "startDate", "endDate", "minAmount", "maxAmount", "includeSystem"]
 export type RangeFilterConfig = {
     field: string;           // document field name, e.g. "amount" | "date"
     min?: string;            // query param key for lower bound, e.g. "minAmount"

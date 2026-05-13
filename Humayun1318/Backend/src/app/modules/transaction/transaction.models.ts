@@ -109,6 +109,13 @@ const transactionSchema = new Schema<ITransactionDocument, ITransactionModel>(
             index: true,   // range queries on date are very common
         },
 
+       // FK reference 
+        recurrenceId: {
+            type: Schema.Types.ObjectId,
+            ref: 'Recurrence',
+            default: null,
+        },
+
         isRecurring: {
             type: Boolean,
             default: false,

@@ -81,4 +81,6 @@ export interface ICategoryQuery {
   includeSystem?: boolean;
   page?: number;
   limit?: number;
+  sort?: string;
+  serachTerm?: string;
 }
