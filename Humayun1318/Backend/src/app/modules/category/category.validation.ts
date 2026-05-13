@@ -114,17 +114,8 @@ const getCategoriesQuerySchema = z.object({
 })
 
 
-// ---------------------------------------------------------------------------
-// Params schema — shared by GET /categories/:id and DELETE /categories/:id
-// ---------------------------------------------------------------------------
-const categoryIdParamSchema = z.object({
-    id: z.string().min(1, 'Category id is required in params'),
-});
-
-
 export const categoryValidation = {
     createCategorySchema,
     updateCategorySchema,
     getCategoriesQuerySchema,
-    categoryIdParamSchema,
 };

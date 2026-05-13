@@ -2,6 +2,7 @@ import { Router } from "express";
 import { userRoutes } from "../modules/user/user.route";
 import { authRoutes } from "../modules/auth/auth.route";
 import { categoryRoutes } from "../modules/category/category.route";
+import { transactionRoutes } from "../modules/transaction/transaction.route";
 
 
 export const router = Router();
@@ -20,7 +21,10 @@ const moduleRoutes = [
         path: '/categories',
         route: categoryRoutes,
     },
-
+    {
+        path: '/transactions',
+        route: transactionRoutes,
+    }
 ];
 
 moduleRoutes.forEach((route) => {

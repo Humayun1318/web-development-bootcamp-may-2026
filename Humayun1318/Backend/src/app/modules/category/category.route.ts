@@ -6,6 +6,7 @@ import { authenticate } from '../../middlewares/authenticate';
 import { validateRequest } from '../../middlewares/validateRequest';
 import { validateQuery } from '../../middlewares/validateQuery';
 import { validateParams } from '../../middlewares/validateParams';
+import { mongoIdParamSchema } from '../transaction/transaction.validation';
 
 const router = Router();
 
@@ -35,7 +36,7 @@ router.get(
 router.get(
   '/:id',
   authenticate(UserRole.USER, UserRole.ADMIN),
-  validateParams(categoryValidation.categoryIdParamSchema),
+  validateParams(mongoIdParamSchema),
   categoryController.getCategoryById,
 );
 
@@ -57,7 +58,7 @@ router.patch(
 router.delete(
   '/:id',
   authenticate(UserRole.USER, UserRole.ADMIN),
-  validateParams(categoryValidation.categoryIdParamSchema),
+  validateParams(mongoIdParamSchema),
   categoryController.deleteCategory,
 );
 

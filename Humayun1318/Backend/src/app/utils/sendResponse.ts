@@ -1,13 +1,18 @@
 
 import { Response } from 'express';
 
+interface TMeta {
+    page: number;
+    limit: number;
+    totalPages: number;
+    total: number
+}
 interface TResponse<T> {
-    // HTTP status code (200, 201, 400, 401, 404, 500, etc.)
     statusCode: number;
     success: boolean;
     message: string;
-    // The actual data returned to the client (could be null for errors)
     data: T;
+    meta?: TMeta
 }
 
 
@@ -18,5 +23,6 @@ export const sendResponse = <T>(res: Response, data: TResponse<T>) => {
         success: data.success,
         message: data.message,
         data: data.data,
+        meta: data.meta,
     });
 };
