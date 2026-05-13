@@ -1,6 +1,5 @@
-
-import { Document, Model, Types } from 'mongoose';
-import { TransactionType, PaymentMethod } from './transaction.constants';
+import type { Document, Model, Types } from 'mongoose';
+import type { TransactionType, PaymentMethod } from './transaction.constants';
 
 // ---------------------------------------------------------------------------
 // Core domain shape
@@ -75,7 +74,8 @@ export interface ITransactionModel extends Model<ITransactionDocument> {
 // ---------------------------------------------------------------------------
 
 /** Payload accepted when creating a transaction. */
-export interface ICreateTransactionPayload { // 4 required fields, rest optional
+export interface ICreateTransactionPayload {
+  // 4 required fields, rest optional
   categoryId: string;
   type: TransactionType;
   amount: number;
@@ -108,7 +108,7 @@ export interface ITransactionQuery {
   endDate?: Date;
   minAmount?: number;
   maxAmount?: number;
-  searchTerm?: string;       // fuzzy match on description / referenceNote
+  searchTerm?: string; // fuzzy match on description / referenceNote
   page?: number;
   limit?: number;
   sort?: string;
@@ -118,9 +118,9 @@ export interface ITransactionQuery {
 export interface ITransactionListResult {
   data: ITransactionDocument[];
   meta: {
-    total: number;       // total matching documents (ignoring pagination)
-    page: number;        // current page number
-    limit: number;       // items per page
-    totalPages: number;  // total pages available
+    total: number; // total matching documents (ignoring pagination)
+    page: number; // current page number
+    limit: number; // items per page
+    totalPages: number; // total pages available
   };
 }

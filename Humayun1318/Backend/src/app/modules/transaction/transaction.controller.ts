@@ -1,15 +1,13 @@
-import { Request, Response } from "express";
-import catchAsync from "../../utils/catchAsync";
-import { getUserIdFromReq } from "../../utils/getUserIdFromReq";
-import { transactionService } from "./transaction.service";
-import { sendResponse } from "../../utils/sendResponse";
-import { HTTP_STATUS } from "../../utils/HTTP_STATUS_CODE";
-import { ITransactionQuery } from "./transaction.interface";
-
+import type { Request, Response } from 'express';
+import catchAsync from '../../utils/catchAsync';
+import { getUserIdFromReq } from '../../utils/getUserIdFromReq';
+import { transactionService } from './transaction.service';
+import { sendResponse } from '../../utils/sendResponse';
+import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // createTransaction
-// ─────────────────────────────────────────────────────────────────────────────  
+// ─────────────────────────────────────────────────────────────────────────────
 const createTransaction = catchAsync(async (req: Request, res: Response) => {
   const userId = getUserIdFromReq(req);
 
@@ -50,8 +48,7 @@ const getAllTransactions = catchAsync(async (req: Request, res: Response) => {
 
   // console.log('Received getAllTransactions request with query:', query);
 
-  const { data, meta } =
-    await transactionService.getAllTransactions(userId, req.query);
+  const { data, meta } = await transactionService.getAllTransactions(userId, req.query);
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.OK,
@@ -122,15 +119,9 @@ const deleteTransaction = catchAsync(async (req: Request, res: Response) => {
 const getTransactionSummary = catchAsync(async (req: Request, res: Response) => {
   const userId = getUserIdFromReq(req);
 
+  const toDate = req.query.toDate ? new Date(req.query.toDate as string) : undefined;
 
-  const toDate= req.query.toDate
-    ? new Date(req.query.toDate as string)
-    : undefined;
-
-  const result = await transactionService.getTransactionSummary(
-    userId,
-    toDate,
-  );
+  const result = await transactionService.getTransactionSummary(userId, toDate);
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.OK,

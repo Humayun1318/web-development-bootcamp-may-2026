@@ -1,8 +1,7 @@
-
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import catchAsync from '../../utils/catchAsync';
 import { categoryService } from './category.service';
-import { ICategoryQuery } from './category.interface';
+import type { ICategoryQuery } from './category.interface';
 import { sendResponse } from '../../utils/sendResponse';
 import { getUserIdFromReq } from '../../utils/getUserIdFromReq';
 import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
@@ -84,7 +83,7 @@ const updateCategory = catchAsync(async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────────────────────────
 const deleteCategory = catchAsync(async (req: Request, res: Response) => {
   const userId = getUserIdFromReq(req);
-  const { id } = req.params!;
+  const { id } = req.params;
 
   await categoryService.deleteCategory(id!, userId);
 

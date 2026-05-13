@@ -19,7 +19,6 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "@types/node-cron": "^3.0.11",
     "bcrypt": "^6.0.0",
     "colors": "^1.4.0",
     "cookie-parser": "^1.4.7",
@@ -37,6 +36,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@types/node-cron": "^3.0.11",
     "@types/bcrypt": "^6.0.0",
     "@types/colors": "^1.2.4",
     "@types/cookie-parser": "^1.4.10",

@@ -1,5 +1,4 @@
-
-import {
+import type {
   ICategoryDocument,
   ICategoryQuery,
   ICreateCategoryPayload,
@@ -19,7 +18,6 @@ const createCategory = async (
   userId: string,
   payload: ICreateCategoryPayload,
 ): Promise<ICategoryDocument> => {
-
   const normalizedName = normalizeCategoryName(payload?.name);
 
   const existingSystemCategory = await Category.findOne({
@@ -29,10 +27,7 @@ const createCategory = async (
   });
 
   if (existingSystemCategory) {
-    throw new AppError(
-      HTTP_STATUS.CONFLICT,
-      'This category already exists as a system category'
-    );
+    throw new AppError(HTTP_STATUS.CONFLICT, 'This category already exists as a system category');
   }
   const existingUserCategory = await Category.findOne({
     name: normalizedName,
@@ -42,10 +37,7 @@ const createCategory = async (
   });
 
   if (existingUserCategory) {
-    throw new AppError(
-      HTTP_STATUS.CONFLICT,
-      'You already created this category'
-    );
+    throw new AppError(HTTP_STATUS.CONFLICT, 'You already created this category');
   }
 
   const category = await Category.create({
@@ -62,33 +54,29 @@ const createCategory = async (
 //   • Their own custom categories (userId matches)
 //   • System categories (isSystem === true / userId === null)
 // ─────────────────────────────────────────────────────────────────────────────
-const getAllCategories = async (
-  userId: string,
-  query: ICategoryQuery,
-) => {
-
+const getAllCategories = async (userId: string, query: ICategoryQuery) => {
   const rawQuery = {
-    ...query
-  } as unknown as Record<string, string>
+    ...query,
+  } as unknown as Record<string, string>;
 
   const baseFilter = {
-    $or: [
-      { userId: toObjectId(userId) },
-      { isSystem: true },
-    ],
+    $or: [{ userId: toObjectId(userId) }, { isSystem: true }],
   };
 
-  console.log("raw query", rawQuery, userId)
+  console.log('raw query', rawQuery, userId);
 
-  const queryBuild = new QueryBuilder(Category.find(baseFilter).populate({
-    path: "userId",
-    select: "name email",
-  }), rawQuery)
+  const queryBuild = new QueryBuilder(
+    Category.find(baseFilter).populate({
+      path: 'userId',
+      select: 'name email',
+    }),
+    rawQuery,
+  );
 
   const built = queryBuild
     // .search(CATEGORY_SEARCHABLE_FIELDS)
     .sort()
-    .paginate()
+    .paginate();
 
   const [data, meta] = await Promise.all([
     built.build().lean<ICategoryDocument[]>(),
@@ -101,10 +89,7 @@ const getAllCategories = async (
 // Fetches a single category, verifying the requester has read access.
 // System categories are readable by anyone; custom categories only by owner.
 // ─────────────────────────────────────────────────────────────────────────────
-const getCategoryById = async (
-  categoryId: string,
-  userId: string,
-): Promise<ICategoryDocument> => {
+const getCategoryById = async (categoryId: string, userId: string): Promise<ICategoryDocument> => {
   const canAccess = await Category.isOwnerOrSystem(categoryId, userId);
 
   // Non-system category belongs to a different user — deny read.
@@ -129,7 +114,6 @@ const updateCategory = async (
   userId: string,
   payload: IUpdateCategoryPayload,
 ): Promise<ICategoryDocument> => {
-
   const canAccess = await Category.isOwnerOrSystem(categoryId, userId);
 
   if (!canAccess) {
@@ -143,10 +127,7 @@ const updateCategory = async (
 
   // Immutability guard for system categories.
   if (category.isSystem) {
-    throw new AppError(
-      HTTP_STATUS.FORBIDDEN,
-      'System categories cannot be modified',
-    );
+    throw new AppError(HTTP_STATUS.FORBIDDEN, 'System categories cannot be modified');
   }
 
   // Ownership guard for custom categories.
@@ -168,11 +149,7 @@ const updateCategory = async (
 // deleteCategory
 // Soft-deletes by setting isActive = false.
 // ─────────────────────────────────────────────────────────────────────────────
-const deleteCategory = async (
-  categoryId: string,
-  userId: string,
-): Promise<void> => {
-
+const deleteCategory = async (categoryId: string, userId: string): Promise<void> => {
   const canAccess = await Category.isOwnerOrSystem(categoryId, userId);
 
   if (!canAccess) {
@@ -185,10 +162,7 @@ const deleteCategory = async (
   }
 
   if (category.isSystem) {
-    throw new AppError(
-      HTTP_STATUS.FORBIDDEN,
-      'System categories cannot be deleted',
-    );
+    throw new AppError(HTTP_STATUS.FORBIDDEN, 'System categories cannot be deleted');
   }
 
   // if (!category.userId?.equals(userId)) {

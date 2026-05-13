@@ -1,5 +1,5 @@
-import { Document, Model, Types } from 'mongoose';
-import {
+import type { Document, Model, Types } from 'mongoose';
+import type {
   SupportedCurrency,
   SupportedTimezone,
   UserRoleType,
@@ -8,13 +8,13 @@ import {
 
 // authProvider types
 export enum AuthProvider {
-  LOCAL  = 'local', 
-  GOOGLE = 'google',  
+  LOCAL = 'local',
+  GOOGLE = 'google',
 }
 
 // authentication providers
 export interface IAuthEntry {
-  provider:   AuthProvider;
+  provider: AuthProvider;
   providerId: string;
 }
 
@@ -29,8 +29,8 @@ export interface IUser {
 
   avatarUrl?: string;
 
-  role: UserRoleType;       // user | admin
-  status: UserStatusType;   // active | suspended | deleted
+  role: UserRoleType; // user | admin
+  status: UserStatusType; // active | suspended | deleted
 
   auths: IAuthEntry[];
   currency: SupportedCurrency;
@@ -43,7 +43,6 @@ export interface IUser {
   createdAt: Date;
   updatedAt: Date;
 }
-
 
 export interface IUserDocument extends IUser, Document {
   _id: Types.ObjectId;
@@ -110,7 +109,7 @@ export interface IChangePasswordPayload {
 export interface IUserQuery {
   role?: UserRoleType;
   status?: UserStatusType;
-  search?: string;   // matches name or email
+  search?: string; // matches name or email
   page?: number;
   limit?: number;
 }

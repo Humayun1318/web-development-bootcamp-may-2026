@@ -1,5 +1,4 @@
-
-import {
+import type {
   ICreateTransactionPayload,
   ITransactionDocument,
   ITransactionListResult,
@@ -15,7 +14,6 @@ import { toObjectId } from '../../utils/toObjectId';
 import { TRANSACTION_SEARCHABLE_FIELDS } from './transaction.constants';
 import { normalizeCategoryName } from '../category/category.utils';
 import User from '../user/user.models';
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // createTransaction
@@ -41,10 +39,7 @@ const createTransaction = async (
   }).lean();
 
   if (!category) {
-    throw new AppError(
-      HTTP_STATUS.NOT_FOUND,
-      'Category not found or not accessible',
-    );
+    throw new AppError(HTTP_STATUS.NOT_FOUND, 'Category not found or not accessible');
   }
 
   if (category.type !== payload.type) {
@@ -56,10 +51,7 @@ const createTransaction = async (
 
   const user = await User.findById(userId).lean();
   if (!user) {
-    throw new AppError(
-      HTTP_STATUS.NOT_FOUND,
-      'User not found',
-    );
+    throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found');
   }
 
   const transaction = await Transaction.create({
@@ -88,7 +80,6 @@ const getAllTransactions = async (
   userId: string,
   query: ITransactionQuery,
 ): Promise<ITransactionListResult> => {
-
   const rawQuery = {
     ...query,
     userId: toObjectId(userId),
@@ -98,8 +89,8 @@ const getAllTransactions = async (
 
   const queryBuilder = new QueryBuilder(
     Transaction.find().populate({
-      path: "categoryId",
-      select: "name type icon colorHex",
+      path: 'categoryId',
+      select: 'name type icon colorHex',
     }),
     rawQuery,
   );
@@ -108,8 +99,8 @@ const getAllTransactions = async (
     .search(TRANSACTION_SEARCHABLE_FIELDS)
     .filter()
     .rangeFilter([
-      { field: "amount", min: "minAmount", max: "maxAmount" },
-      { field: "date", min: "startDate", max: "endDate" },
+      { field: 'amount', min: 'minAmount', max: 'maxAmount' },
+      { field: 'date', min: 'startDate', max: 'endDate' },
     ])
     .sort()
     .paginate();
@@ -122,7 +113,7 @@ const getAllTransactions = async (
 
   return {
     data,
-    meta
+    meta,
   };
 };
 
@@ -171,10 +162,7 @@ const updateTransaction = async (
     }).lean();
 
     if (!category) {
-      throw new AppError(
-        HTTP_STATUS.NOT_FOUND,
-        'Category not found or not accessible',
-      );
+      throw new AppError(HTTP_STATUS.NOT_FOUND, 'Category not found or not accessible');
     }
 
     // Re-check type match using the EXISTING transaction type
@@ -202,10 +190,7 @@ const updateTransaction = async (
 // policy from categories: once deleted they are gone.  If audit trails are
 // needed in future, an audit_log module should be added (out of scope here).
 // ─────────────────────────────────────────────────────────────────────────────
-const deleteTransaction = async (
-  transactionId: string,
-  userId: string,
-): Promise<void> => {
+const deleteTransaction = async (transactionId: string, userId: string): Promise<void> => {
   const result = await Transaction.findOneAndDelete({
     _id: transactionId,
     userId: toObjectId(userId), // ownership guard prevents deleting another user's transaction

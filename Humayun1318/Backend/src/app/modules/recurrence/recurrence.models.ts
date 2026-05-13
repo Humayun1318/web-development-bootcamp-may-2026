@@ -1,12 +1,6 @@
 import { Schema, model } from 'mongoose';
-import {
-  RECURRENCE_FREQUENCY,
-  RECURRENCE_VALIDATION,
-} from './recurrence.constants';
-import {
-  IRecurrenceDocument,
-  IRecurrenceModel,
-} from './recurrence.interface';
+import { RECURRENCE_FREQUENCY, RECURRENCE_VALIDATION } from './recurrence.constants';
+import type { IRecurrenceDocument, IRecurrenceModel } from './recurrence.interface';
 import { TRANSACTION_TYPE, PAYMENT_METHOD } from '../transaction/transaction.constants';
 import { computeNextDueDate } from './recurrence.utils';
 
@@ -86,7 +80,10 @@ const recurrenceSchema = new Schema<IRecurrenceDocument, IRecurrenceModel>(
       type: Number,
       default: 1,
       min: [RECURRENCE_VALIDATION.INTERVAL_MIN, 'Interval must be at least 1'],
-      max: [RECURRENCE_VALIDATION.INTERVAL_MAX, `Interval cannot exceed ${RECURRENCE_VALIDATION.INTERVAL_MAX}`],
+      max: [
+        RECURRENCE_VALIDATION.INTERVAL_MAX,
+        `Interval cannot exceed ${RECURRENCE_VALIDATION.INTERVAL_MAX}`,
+      ],
     },
 
     // ---------------------------------------------------------------------------
@@ -105,7 +102,7 @@ const recurrenceSchema = new Schema<IRecurrenceDocument, IRecurrenceModel>(
     nextDueDate: {
       type: Date,
       required: [true, 'nextDueDate is required'],
-      index: true,    // the cron query hits this index every single day
+      index: true, // the cron query hits this index every single day
     },
 
     // null = runs forever; set a date to stop after that point.
@@ -155,13 +152,10 @@ const recurrenceSchema = new Schema<IRecurrenceDocument, IRecurrenceModel>(
 //   Without this, the daily cron would do a full collection scan across ALL
 //   users' recurrences every night..
 // ─────────────────────────────────────────────────────────────────────────────
-recurrenceSchema.index(
-  { userId: 1, isActive: 1 },
-  { name: 'idx_recurrence_user_active' },
-);
+recurrenceSchema.index({ userId: 1, isActive: 1 }, { name: 'idx_recurrence_user_active' });
 recurrenceSchema.index(
   { nextDueDate: 1, isActive: 1 },
-  { name: 'idx_recurrence_due_active' },  // cron query index — critical
+  { name: 'idx_recurrence_due_active' }, // cron query index — critical
 );
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -178,11 +172,7 @@ recurrenceSchema.index(
 //   an instance method.  The cron job just calls it and moves on.
 // ─────────────────────────────────────────────────────────────────────────────
 recurrenceSchema.methods.advanceNextDueDate = async function (): Promise<Date> {
-  const newDate = computeNextDueDate(
-    this.nextDueDate,
-    this.frequency,
-    this.interval,
-  );
+  const newDate = computeNextDueDate(this.nextDueDate, this.frequency, this.interval);
 
   // Auto-deactivate if we've passed the endDate.
   if (this.endDate && newDate > this.endDate) {
@@ -203,9 +193,7 @@ recurrenceSchema.methods.advanceNextDueDate = async function (): Promise<Date> {
 //
 // Called ONLY by the cron job — never by any HTTP endpoint.
 // ─────────────────────────────────────────────────────────────────────────────
-recurrenceSchema.statics.findDueToday = async function (): Promise<
-  IRecurrenceDocument[]
-> {
+recurrenceSchema.statics.findDueToday = async function (): Promise<IRecurrenceDocument[]> {
   const todayEnd = new Date();
   todayEnd.setHours(23, 59, 59, 999); // end of today
 
@@ -218,9 +206,6 @@ recurrenceSchema.statics.findDueToday = async function (): Promise<
 // ─────────────────────────────────────────────────────────────────────────────
 // Model export
 // ─────────────────────────────────────────────────────────────────────────────
-const Recurrence = model<IRecurrenceDocument, IRecurrenceModel>(
-  'Recurrence',
-  recurrenceSchema,
-);
+const Recurrence = model<IRecurrenceDocument, IRecurrenceModel>('Recurrence', recurrenceSchema);
 
 export default Recurrence;

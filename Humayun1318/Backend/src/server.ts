@@ -1,8 +1,8 @@
-import { Server } from "http";
-import app from "./app";
-import mongoose from "mongoose";
-import { envVars } from "./app/config/env";
-import { registerRecurrenceCron, stopRecurrenceCron } from "./app/jobs/recurrence.cron";
+import type { Server } from 'http';
+import app from './app';
+import mongoose from 'mongoose';
+import { envVars } from './app/config/env';
+import { registerRecurrenceCron, stopRecurrenceCron } from './app/jobs/recurrence.cron';
 
 let server: Server;
 
@@ -34,7 +34,6 @@ const startServer = async () => {
 (async () => {
   // Start the Express server and connect to MongoDB
   await startServer();
-  
 })();
 
 /**

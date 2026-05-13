@@ -1,4 +1,3 @@
-
 import cron from 'node-cron';
 import { RECURRENCE_MASTER_CRON } from '../modules/recurrence/recurrence.constants';
 import { recurrenceService } from '../modules/recurrence/recurrence.service';
@@ -32,21 +31,17 @@ export const registerRecurrenceCron = (): void => {
       console.log(`[RecurrenceCron] Starting job at ${new Date().toISOString()}`);
 
       try {
-        const result =
-          await recurrenceService.createTransactionsForDueRecurrences();
+        const result = await recurrenceService.createTransactionsForDueRecurrences();
 
         console.log(
           `[RecurrenceCron] Done — processed: ${result.processed}, ` +
-          `created: ${result.created}, failed: ${result.failed}`,
+            `created: ${result.created}, failed: ${result.failed}`,
         );
 
         // Log individual failures without crashing — the next run will retry
         // anything that failed because advanceNextDueDate was not called.
         if (result.errors.length > 0) {
-          console.error(
-            '[RecurrenceCron] Errors:',
-            JSON.stringify(result.errors, null, 2),
-          );
+          console.error('[RecurrenceCron] Errors:', JSON.stringify(result.errors, null, 2));
         }
       } catch (err) {
         // A top-level catch ensures an unhandled exception in the service
@@ -63,9 +58,7 @@ export const registerRecurrenceCron = (): void => {
   task.start();
 
   // Log confirmation so server startup logs are clear.
-  console.log(
-    `[RecurrenceCron] Registered — schedule: "${RECURRENCE_MASTER_CRON}" (Asia/Dhaka)`,
-  );
+  console.log(`[RecurrenceCron] Registered — schedule: "${RECURRENCE_MASTER_CRON}" (Asia/Dhaka)`);
 
   // Return the task object so callers can stop it if needed (e.g. in tests).
   // We store it on the module-level variable below for graceful shutdown.

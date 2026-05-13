@@ -1,5 +1,3 @@
-
-
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper — compute next due date
 //
@@ -12,30 +10,26 @@
 //   For production, consider replacing with date-fns addMonths / addWeeks etc.
 //   to handle edge cases like Feb 30 overflow.
 
-import { RECURRENCE_FREQUENCY } from "./recurrence.constants";
+import { RECURRENCE_FREQUENCY } from './recurrence.constants';
 
 // ─────────────────────────────────────────────────────────────────────────────
-export const computeNextDueDate = (
-    from: Date,
-    frequency: string,
-    interval: number,
-): Date => {
-    const next = new Date(from);
+export const computeNextDueDate = (from: Date, frequency: string, interval: number): Date => {
+  const next = new Date(from);
 
-    switch (frequency) {
-        case RECURRENCE_FREQUENCY.DAILY:
-            next.setDate(next.getDate() + interval);
-            break;
-        case RECURRENCE_FREQUENCY.WEEKLY:
-            next.setDate(next.getDate() + 7 * interval);
-            break;
-        case RECURRENCE_FREQUENCY.MONTHLY:
-            next.setMonth(next.getMonth() + interval);
-            break;
-        case RECURRENCE_FREQUENCY.YEARLY:
-            next.setFullYear(next.getFullYear() + interval);
-            break;
-    }
+  switch (frequency) {
+    case RECURRENCE_FREQUENCY.DAILY:
+      next.setDate(next.getDate() + interval);
+      break;
+    case RECURRENCE_FREQUENCY.WEEKLY:
+      next.setDate(next.getDate() + 7 * interval);
+      break;
+    case RECURRENCE_FREQUENCY.MONTHLY:
+      next.setMonth(next.getMonth() + interval);
+      break;
+    case RECURRENCE_FREQUENCY.YEARLY:
+      next.setFullYear(next.getFullYear() + interval);
+      break;
+  }
 
-    return next;
+  return next;
 };

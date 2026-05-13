@@ -1,4 +1,4 @@
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { userService } from './user.service';
 import catchAsync from '../../utils/catchAsync';
 import { sendResponse } from '../../utils/sendResponse';
@@ -27,7 +27,7 @@ const register = catchAsync(async (req: Request, res: Response) => {
 // Get My Profile
 // ─────────────────────────────────────────────
 const getMe = catchAsync(async (req: Request, res: Response) => {
-  const userId = getUserIdFromReq(req)
+  const userId = getUserIdFromReq(req);
   const result = await userService.getMe(userId);
 
   sendResponse(res, {
@@ -43,10 +43,7 @@ const getMe = catchAsync(async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────
 const updateProfile = catchAsync(async (req: Request, res: Response) => {
   const userId = getUserIdFromReq(req);
-  const result = await userService.updateProfile(
-    userId,
-    req.body,
-  );
+  const result = await userService.updateProfile(userId, req.body);
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.OK,
@@ -60,10 +57,7 @@ const updateProfile = catchAsync(async (req: Request, res: Response) => {
 // Change Password
 // ─────────────────────────────────────────────
 const changePassword = catchAsync(async (req: Request, res: Response) => {
-  await userService.changePassword(
-    getUserIdFromReq(req),
-    req.body,
-  );
+  await userService.changePassword(getUserIdFromReq(req), req.body);
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.OK,
@@ -77,10 +71,7 @@ const changePassword = catchAsync(async (req: Request, res: Response) => {
 // Delete Own Account
 // ─────────────────────────────────────────────
 const deleteOwnAccount = catchAsync(async (req: Request, res: Response) => {
-  await userService.deleteOwnAccount(
-    getUserIdFromReq(req),
-    req.body.password,
-  );
+  await userService.deleteOwnAccount(getUserIdFromReq(req), req.body.password);
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.OK,
@@ -122,10 +113,7 @@ const getUserById = catchAsync(async (req: Request, res: Response) => {
 // Admin: Update User Status
 // ─────────────────────────────────────────────
 const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.updateUserStatus(
-    req.params.id!,
-    req.body.status,
-  );
+  const result = await userService.updateUserStatus(req.params.id!, req.body.status);
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.OK,

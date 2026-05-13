@@ -1,25 +1,20 @@
-import { Router } from "express";
-import { authenticate } from "../../middlewares/authenticate";
-import { UserRole } from "../user/user.constants";
-import { recurrenceController } from "./recurrence.controller";
-import { validateRequest } from "../../middlewares/validateRequest";
-import { recurrenceValidation } from "./recurrence.validation";
-import { validateParams } from "../../middlewares/validateParams";
-import { mongoIdParamSchema } from "../transaction/transaction.validation";
-import { validateQuery } from "../../middlewares/validateQuery";
-
+import { Router } from 'express';
+import { authenticate } from '../../middlewares/authenticate';
+import { UserRole } from '../user/user.constants';
+import { recurrenceController } from './recurrence.controller';
+import { validateRequest } from '../../middlewares/validateRequest';
+import { recurrenceValidation } from './recurrence.validation';
+import { validateParams } from '../../middlewares/validateParams';
+import { mongoIdParamSchema } from '../transaction/transaction.validation';
+import { validateQuery } from '../../middlewares/validateQuery';
 
 const router = Router();
 
 // ---------------------------------------------------------------------------
-// POST /api/v1/recurrences/trigger  — ADMIN ONLY, 
-// Manually fires the cron logic 
+// POST /api/v1/recurrences/trigger  — ADMIN ONLY,
+// Manually fires the cron logic
 // ---------------------------------------------------------------------------
-router.post(
-  '/trigger',
-  authenticate(UserRole.ADMIN),
-  recurrenceController.triggerManually,
-);
+router.post('/trigger', authenticate(UserRole.ADMIN), recurrenceController.triggerManually);
 
 // ---------------------------------------------------------------------------
 // POST /api/v1/recurrences

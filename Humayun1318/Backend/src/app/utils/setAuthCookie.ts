@@ -1,6 +1,6 @@
-import { Response } from "express";
-import { envVars } from "../config/env";
-import { IAuthTokens } from "../modules/user/user.interface";
+import type { Response } from 'express';
+import { envVars } from '../config/env';
+import type { IAuthTokens } from '../modules/user/user.interface';
 
 export const setAuthCookie = (res: Response, tokenInfo: IAuthTokens) => {
   if (tokenInfo.accessToken) {

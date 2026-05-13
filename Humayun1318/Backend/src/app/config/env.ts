@@ -1,4 +1,3 @@
-
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file into process.env
@@ -30,7 +29,6 @@ interface EnvConfig {
   GOOGLE_CLIENT_SECRET: string;
   GOOGLE_CALLBACK_URL: string;
 }
-
 
 const loadEnvVariables = (): EnvConfig => {
   // List of all required environment variables that must be present

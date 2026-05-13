@@ -1,4 +1,3 @@
-
 import { QueryBuilder } from '../../builder/QueryBuilder';
 import AppError from '../../errorHelpers/AppError';
 import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
@@ -7,7 +6,7 @@ import { normalizeCategoryName } from '../category/category.utils';
 import Transaction from '../transaction/transaction.models';
 import User from '../user/user.models';
 import { RECURRENCE_SEARCHABLE_FIELDS } from './recurrence.constants';
-import {
+import type {
   ICreateRecurrencePayload,
   IRecurrenceDocument,
   IRecurrenceQuery,
@@ -41,10 +40,7 @@ const createRecurrence = async (
   }
   const user = await User.findById(userId).lean();
   if (!user) {
-    throw new AppError(
-      HTTP_STATUS.NOT_FOUND,
-      'User not found',
-    );
+    throw new AppError(HTTP_STATUS.NOT_FOUND, 'User not found');
   }
 
   const { startDate, ...rest } = payload;
@@ -62,28 +58,23 @@ const createRecurrence = async (
 // ─────────────────────────────────────────────────────────────────────────────
 // getAllRecurrences
 // ─────────────────────────────────────────────────────────────────────────────
-const getAllRecurrences = async (
-  userId: string,
-  query: IRecurrenceQuery,
-) => {
-
+const getAllRecurrences = async (userId: string, query: IRecurrenceQuery) => {
   const rawQuery = {
     ...query,
-    userId
-  } as unknown as Record<string, string>
+    userId,
+  } as unknown as Record<string, string>;
 
-  console.log("raw query", rawQuery)
+  console.log('raw query', rawQuery);
 
-  const queryBuild = new QueryBuilder(Recurrence.find().populate({
-    path: "categoryId",
-    select: "name type icon colorHex",
-  }), rawQuery)
+  const queryBuild = new QueryBuilder(
+    Recurrence.find().populate({
+      path: 'categoryId',
+      select: 'name type icon colorHex',
+    }),
+    rawQuery,
+  );
 
-  const built = queryBuild
-    .search(RECURRENCE_SEARCHABLE_FIELDS)
-    .filter()
-    .sort()
-    .paginate()
+  const built = queryBuild.search(RECURRENCE_SEARCHABLE_FIELDS).filter().sort().paginate();
 
   const [data, meta] = await Promise.all([
     built.build().lean<IRecurrenceDocument[]>(),
@@ -138,10 +129,7 @@ const updateRecurrence = async (
 // The transactions it already generated remain untouched (they have their own
 // documents in the transactions collection with recurrence_id stamps).
 // ─────────────────────────────────────────────────────────────────────────────
-const deleteRecurrence = async (
-  recurrenceId: string,
-  userId: string,
-): Promise<void> => {
+const deleteRecurrence = async (recurrenceId: string, userId: string): Promise<void> => {
   const result = await Recurrence.findOneAndDelete({ _id: recurrenceId, userId });
 
   if (!result) {
@@ -190,10 +178,7 @@ const createTransactionsForDueRecurrences = async (): Promise<{
       }).lean();
 
       if (!category) {
-        throw new AppError(
-          HTTP_STATUS.NOT_FOUND,
-          'Category not found or not accessible',
-        );
+        throw new AppError(HTTP_STATUS.NOT_FOUND, 'Category not found or not accessible');
       }
       // -----------------------------------------------------------------------
       // Create the transaction.
@@ -209,9 +194,9 @@ const createTransactionsForDueRecurrences = async (): Promise<{
         currency: recurrence?.currency,
         description: recurrence.description ?? `Auto: ${recurrence.frequency} transaction`,
         paymentMethod: recurrence?.paymentMethod ?? `cash`,
-        date: new Date(),         // today — the date it was actually generated
+        date: new Date(), // today — the date it was actually generated
         isRecurring: true,
-        recurrenceId: recurrence._id,   // FK stamp — see transaction model update note
+        recurrenceId: recurrence._id, // FK stamp — see transaction model update note
       });
 
       // Advance nextDueDate AFTER successful transaction creation.

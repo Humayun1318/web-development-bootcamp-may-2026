@@ -1,4 +1,3 @@
-
 class AppError extends Error {
   // HTTP status code associated with this error
   public statusCode: number;

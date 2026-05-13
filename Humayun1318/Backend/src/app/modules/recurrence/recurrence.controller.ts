@@ -1,5 +1,4 @@
-
-import { Request, Response } from 'express';
+import type { Request, Response } from 'express';
 import { recurrenceService } from './recurrence.service';
 import catchAsync from '../../utils/catchAsync';
 import { getUserIdFromReq } from '../../utils/getUserIdFromReq';
@@ -11,7 +10,7 @@ import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
 // POST /api/v1/recurrences
 // ─────────────────────────────────────────────────────────────────────────────
 const createRecurrence = catchAsync(async (req: Request, res: Response) => {
-  const userId = getUserIdFromReq(req)
+  const userId = getUserIdFromReq(req);
 
   const result = await recurrenceService.createRecurrence(userId, req.body);
 
@@ -28,7 +27,7 @@ const createRecurrence = catchAsync(async (req: Request, res: Response) => {
 // GET /api/v1/recurrences
 // ─────────────────────────────────────────────────────────────────────────────
 const getAllRecurrences = catchAsync(async (req: Request, res: Response) => {
-  const userId = getUserIdFromReq(req)
+  const userId = getUserIdFromReq(req);
 
   // const query: IRecurrenceQuery = {
   //   isActive:
@@ -56,10 +55,7 @@ const getAllRecurrences = catchAsync(async (req: Request, res: Response) => {
 // GET /api/v1/recurrences/:id
 // ─────────────────────────────────────────────────────────────────────────────
 const getRecurrenceById = catchAsync(async (req: Request, res: Response) => {
-  const result = await recurrenceService.getRecurrenceById(
-    req.params.id!,
-    getUserIdFromReq(req),
-  );
+  const result = await recurrenceService.getRecurrenceById(req.params.id!, getUserIdFromReq(req));
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.OK,

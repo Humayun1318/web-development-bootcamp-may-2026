@@ -5,8 +5,6 @@ import { userValidation } from './user.validation';
 import { authenticate } from '../../middlewares/authenticate';
 import { UserRole } from './user.constants';
 
-
-
 const router = Router();
 
 // ─────────────────────────────────────────────
@@ -17,52 +15,40 @@ router.post('/register', validateRequest(userValidation.registerSchema), userCon
 // ─────────────────────────────────────────────
 // User (Authenticated)
 // ─────────────────────────────────────────────
-router.get(
-    '/me',
-    authenticate(UserRole.USER, UserRole.ADMIN),
-    userController.getMe,
+router.get('/me', authenticate(UserRole.USER, UserRole.ADMIN), userController.getMe);
+
+router.patch(
+  '/update-profile',
+  authenticate(UserRole.USER, UserRole.ADMIN),
+  validateRequest(userValidation.updateProfileSchema),
+  userController.updateProfile,
 );
 
 router.patch(
-    '/update-profile',
-    authenticate(UserRole.USER, UserRole.ADMIN),
-    validateRequest(userValidation.updateProfileSchema),
-    userController.updateProfile,
-);
-
-router.patch(
-    '/change-password',
-    authenticate(UserRole.USER, UserRole.ADMIN),
-    validateRequest(userValidation.changePasswordSchema),
-    userController.changePassword,
+  '/change-password',
+  authenticate(UserRole.USER, UserRole.ADMIN),
+  validateRequest(userValidation.changePasswordSchema),
+  userController.changePassword,
 );
 
 router.delete(
-    '/delete-account',
-    authenticate(UserRole.USER, UserRole.ADMIN),
-    userController.deleteOwnAccount,
+  '/delete-account',
+  authenticate(UserRole.USER, UserRole.ADMIN),
+  userController.deleteOwnAccount,
 );
 
 // ─────────────────────────────────────────────
 // Admin Routes
 // ─────────────────────────────────────────────
-router.get(
-    '/',
-    authenticate(UserRole.ADMIN),
-    userController.getAllUsers,
-);
+router.get('/', authenticate(UserRole.ADMIN), userController.getAllUsers);
 
-router.get(
-    '/:id',
-    authenticate(UserRole.ADMIN),
-    userController.getUserById,
-);
+router.get('/:id', authenticate(UserRole.ADMIN), userController.getUserById);
 
 router.patch(
-    '/:id/status',
-    authenticate(UserRole.ADMIN),
-    validateRequest(userValidation.updateUserStatusSchema),
-    userController.updateUserStatus,
+  '/:id/status',
+  authenticate(UserRole.ADMIN),
+  validateRequest(userValidation.updateUserStatusSchema),
+  userController.updateUserStatus,
 );
 
 // ─────────────────────────────────────────────

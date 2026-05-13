@@ -1,8 +1,7 @@
-
-import { Document, Model, Types } from 'mongoose';
-import { TransactionType } from '../transaction/transaction.constants';
-import { PaymentMethod } from '../transaction/transaction.constants';
-import { TRecurrenceFrequency } from './recurrence.constants';
+import type { Document, Model, Types } from 'mongoose';
+import type { TransactionType } from '../transaction/transaction.constants';
+import type { PaymentMethod } from '../transaction/transaction.constants';
+import type { TRecurrenceFrequency } from './recurrence.constants';
 
 // ---------------------------------------------------------------------------
 // Core domain shape
@@ -72,7 +71,7 @@ export interface ICreateRecurrencePayload {
   paymentMethod?: PaymentMethod;
   frequency: TRecurrenceFrequency;
   interval?: number;
-  startDate: Date;   // becomes the first nextDueDate
+  startDate: Date; // becomes the first nextDueDate
   endDate?: Date | null;
 }
 

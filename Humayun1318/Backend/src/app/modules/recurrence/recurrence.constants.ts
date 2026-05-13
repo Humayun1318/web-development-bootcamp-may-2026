@@ -1,6 +1,4 @@
-
-
-export const RECURRENCE_SEARCHABLE_FIELDS = ["description", "type", "frequency", "paymentMethod"];
+export const RECURRENCE_SEARCHABLE_FIELDS = ['description', 'type', 'frequency', 'paymentMethod'];
 
 export const RECURRENCE_SORT_FIELDS = [
   'nextDueDate',
@@ -21,8 +19,7 @@ export const RECURRENCE_FREQUENCY = {
   YEARLY: 'yearly',
 } as const;
 
-export type TRecurrenceFrequency =
-  (typeof RECURRENCE_FREQUENCY)[keyof typeof RECURRENCE_FREQUENCY];
+export type TRecurrenceFrequency = (typeof RECURRENCE_FREQUENCY)[keyof typeof RECURRENCE_FREQUENCY];
 
 // ---------------------------------------------------------------------------
 // Cron expression map — the scheduler reads these to know when to fire.
@@ -33,10 +30,10 @@ export type TRecurrenceFrequency =
 //   • The DB stores "monthly"; the scheduler resolves it here at runtime.
 // ---------------------------------------------------------------------------
 export const FREQUENCY_CRON_MAP: Record<TRecurrenceFrequency, string> = {
-  daily: '0 0 * * *',      // midnight every day
-  weekly: '0 0 * * 1',     // midnight every Monday
-  monthly: '0 0 1 * *',    // midnight on the 1st of every month
-  yearly: '0 0 1 1 *',     // midnight on 1st January every year
+  daily: '0 0 * * *', // midnight every day
+  weekly: '0 0 * * 1', // midnight every Monday
+  monthly: '0 0 1 * *', // midnight on the 1st of every month
+  yearly: '0 0 1 1 *', // midnight on 1st January every year
 };
 
 // ---------------------------------------------------------------------------

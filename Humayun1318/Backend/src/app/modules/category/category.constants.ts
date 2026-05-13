@@ -1,13 +1,11 @@
-
-export const CATEGORY_SEARCHABLE_FIELDS = ["name", "type"];
+export const CATEGORY_SEARCHABLE_FIELDS = ['name', 'type'];
 export const CATEGORY_SORT_FIELDS = [
   'name',
   '-name',
   'createdAt',
   '-createdAt',
-  "type",
-  "-type",
-  
+  'type',
+  '-type',
 ] as const;
 // ---------------------------------------------------------------------------
 // Transaction direction — a category always belongs to one side of the ledger.
@@ -81,7 +79,6 @@ export const CATEGORY_VALIDATION = {
   NAME_MAX_LENGTH: 50,
   COLOR_HEX_REGEX: /^#([0-9A-Fa-f]{3}){1,2}$/,
 } as const;
-
 
 // ---------------------------------------------------------------------------
 // System categories — seeded into the database on app startup if not already present.

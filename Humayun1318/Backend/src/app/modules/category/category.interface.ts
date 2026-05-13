@@ -1,7 +1,5 @@
-
-
-import { Document, Model, Types } from 'mongoose';
-import { CategoryType } from './category.constants';
+import type { Document, Model, Types } from 'mongoose';
+import type { CategoryType } from './category.constants';
 
 // ---------------------------------------------------------------------------
 // Core domain shape — plain data.

@@ -1,18 +1,21 @@
-
 // ---------------------------------------------------------------------------
 // Transaction type — mirrors Category.type so a transaction can be validated
 // against its category's ledger side.
 // ---------------------------------------------------------------------------
 
-export const TRANSACTION_SEARCHABLE_FIELDS = ["description", "referenceNote", "categoryName", "paymentMethod"];
+export const TRANSACTION_SEARCHABLE_FIELDS = [
+  'description',
+  'referenceNote',
+  'categoryName',
+  'paymentMethod',
+];
 
 export const TRANSACTION_TYPE = {
   INCOME: 'income',
   EXPENSE: 'expense',
 } as const;
 
-export type TransactionType =
-  (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
+export type TransactionType = (typeof TRANSACTION_TYPE)[keyof typeof TRANSACTION_TYPE];
 
 // ---------------------------------------------------------------------------
 // Payment method — the channel through which money moved.
@@ -27,8 +30,7 @@ export const PAYMENT_METHOD = {
   OTHER: 'other',
 } as const;
 
-export type PaymentMethod =
-  (typeof PAYMENT_METHOD)[keyof typeof PAYMENT_METHOD];
+export type PaymentMethod = (typeof PAYMENT_METHOD)[keyof typeof PAYMENT_METHOD];
 
 // ---------------------------------------------------------------------------
 // Sort fields — the set of fields a client is allowed to sort by.
@@ -41,10 +43,10 @@ export const TRANSACTION_SORT_FIELDS = [
   '-date',
   '-amount',
   '-createdAt',
-  "type",
-  "-type",
-  "categoyName",
-  "-categoryName"
+  'type',
+  '-type',
+  'categoyName',
+  '-categoryName',
 ] as const;
 
 export type TransactionSortField = (typeof TRANSACTION_SORT_FIELDS)[number];

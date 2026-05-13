@@ -1,4 +1,4 @@
-import { StatusCodes } from "http-status-codes";
+import { StatusCodes } from 'http-status-codes';
 
 export const HTTP_STATUS = {
   OK: StatusCodes.OK,
@@ -8,5 +8,5 @@ export const HTTP_STATUS = {
   UNAUTHORIZED: StatusCodes.UNAUTHORIZED,
   FORBIDDEN: StatusCodes.FORBIDDEN,
   NOT_FOUND: StatusCodes.NOT_FOUND,
-  INTERNAL_SERVER_ERROR: StatusCodes.INTERNAL_SERVER_ERROR
+  INTERNAL_SERVER_ERROR: StatusCodes.INTERNAL_SERVER_ERROR,
 };

@@ -1,4 +1,4 @@
-import express from 'express'
+import express from 'express';
 import cors from 'cors';
 import { globalErrorHandler } from './app/middlewares/globalErrorHandler';
 import notFound from './app/middlewares/notFound';
@@ -10,7 +10,6 @@ import expressSession from 'express-session';
 // Import and initialize Passport authentication strategies (Google OAuth, Local)
 import './app/config/passport';
 import passport from 'passport';
-
 
 const app = express();
 
@@ -33,7 +32,7 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-app.use(cookieParser())
+app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
@@ -49,7 +48,6 @@ app.use('/api/v1', router);
 // app.get('/', (_req, res) => {
 //   res.send('Hello, World!');
 // });
-
 
 app.use(globalErrorHandler);
 app.use(notFound);

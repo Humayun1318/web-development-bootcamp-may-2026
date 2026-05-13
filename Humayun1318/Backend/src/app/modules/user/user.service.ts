@@ -1,9 +1,5 @@
-import {
-  USER_QUERY_DEFAULTS,
-  UserStatus,
-} from './user.constants';
-import {
-  AuthProvider,
+import { USER_QUERY_DEFAULTS, UserStatus } from './user.constants';
+import type {
   IAuthEntry,
   IAuthTokens,
   IChangePasswordPayload,
@@ -12,6 +8,7 @@ import {
   IUserDocument,
   IUserQuery,
 } from './user.interface';
+import { AuthProvider } from './user.interface';
 import AppError from '../../errorHelpers/AppError';
 import User from './user.models';
 import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
@@ -20,16 +17,11 @@ import { createUserTokens } from '../../utils/userTokens';
 // ─────────────────────────────────────────────────────────────────────────────
 // register
 // ─────────────────────────────────────────────────────────────────────────────
-const register = async (
-  payload: (IRegisterPayload & { auths?: IAuthEntry[] }),
-) => {
+const register = async (payload: IRegisterPayload & { auths?: IAuthEntry[] }) => {
   // Check for duplicate email before hitting the unique index.
   const emailTaken = await User.isEmailTaken(payload.email);
   if (emailTaken) {
-    throw new AppError(
-      HTTP_STATUS.CONFLICT,
-      'An account with this email address already exists',
-    );
+    throw new AppError(HTTP_STATUS.CONFLICT, 'An account with this email address already exists');
   }
 
   // Normalize auths: set providerId to email
@@ -44,9 +36,7 @@ const register = async (
   ];
 
   // //check if CREDENTIALS provider exists
-  const hasCredentialsProvider = payload.auths.some(
-    (auth) => auth.provider === AuthProvider.LOCAL,
-  );
+  const hasCredentialsProvider = payload.auths.some((auth) => auth.provider === AuthProvider.LOCAL);
 
   // local provider must have password
   if (hasCredentialsProvider && !payload.password) {
@@ -64,11 +54,10 @@ const register = async (
   }
 
   // Generate auth tokens for the newly registered user.
-  const tokens: IAuthTokens = createUserTokens(user)
+  const tokens: IAuthTokens = createUserTokens(user);
 
   return { user, tokens };
 };
-
 
 // ─────────────────────────────────────────────────────────────────────────────
 // getMe — fetch the requesting user's own profile
@@ -81,7 +70,10 @@ const getMe = async (userId: string): Promise<IUserDocument> => {
   }
 
   if (user?.status === UserStatus.DELETED) {
-    throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Your account has been deleted. please contact support.');
+    throw new AppError(
+      HTTP_STATUS.BAD_REQUEST,
+      'Your account has been deleted. please contact support.',
+    );
   }
 
   return user;
@@ -101,7 +93,10 @@ const updateProfile = async (
   }
 
   if (user?.status === UserStatus.DELETED) {
-    throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Your account has been deleted. Profile cannot be updated.');
+    throw new AppError(
+      HTTP_STATUS.BAD_REQUEST,
+      'Your account has been deleted. Profile cannot be updated.',
+    );
   }
 
   Object.assign(user, payload);
@@ -113,10 +108,7 @@ const updateProfile = async (
 // ─────────────────────────────────────────────────────────────────────────────
 // changePassword
 // ─────────────────────────────────────────────────────────────────────────────
-const changePassword = async (
-  userId: string,
-  payload: IChangePasswordPayload,
-): Promise<void> => {
+const changePassword = async (userId: string, payload: IChangePasswordPayload): Promise<void> => {
   // Explicitly select password because it has select:false on the schema.
   const user = await User.findById(userId).select('+password');
 
@@ -137,11 +129,7 @@ const changePassword = async (
 // ─────────────────────────────────────────────────────────────────────────────
 // deleteOwnAccount — soft delete by the user themselves
 // ─────────────────────────────────────────────────────────────────────────────
-const deleteOwnAccount = async (
-  userId: string,
-  password: string,
-): Promise<void> => {
-
+const deleteOwnAccount = async (userId: string, password: string): Promise<void> => {
   if (!password) {
     throw new AppError(HTTP_STATUS.BAD_REQUEST, 'Password is required to delete account');
   }
@@ -223,10 +211,7 @@ const getUserById = async (userId: string): Promise<IUserDocument> => {
 // ─────────────────────────────────────────────────────────────────────────────
 // Admin: updateUserStatus — suspend / reactivate / soft-delete
 // ─────────────────────────────────────────────────────────────────────────────
-const updateUserStatus = async (
-  targetUserId: string,
-  status: string,
-): Promise<IUserDocument> => {
+const updateUserStatus = async (targetUserId: string, status: string): Promise<IUserDocument> => {
   const user = await User.findById(targetUserId);
 
   if (!user) {
