@@ -264,7 +264,7 @@ docs/
 Embed in this README:
 
 ```markdown
-![ERD](./docs/erd.svg)
+![ERD](./docs/erd.png)
 ```
 
 ### Collections at a glance
