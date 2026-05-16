@@ -80,5 +80,5 @@ export interface ICategoryQuery {
   page?: number;
   limit?: number;
   sort?: string;
-  serachTerm?: string;
+  searchTerm?: string;
 }

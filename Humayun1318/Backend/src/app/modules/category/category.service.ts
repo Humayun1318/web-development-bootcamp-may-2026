@@ -59,11 +59,24 @@ const getAllCategories = async (userId: string, query: ICategoryQuery) => {
     ...query,
   } as unknown as Record<string, string>;
 
-  const baseFilter = {
-    $or: [{ userId: toObjectId(userId) }, { isSystem: true }],
+  //   .paginate();
+  const baseFilter: Record<string, any> = {
+    $or: [
+      { userId: toObjectId(userId) },
+      { isSystem: true },
+    ],
   };
 
-  console.log('raw query', rawQuery, userId);
+  if (query?.searchTerm) {
+    baseFilter.$and = [
+      {
+        $or: [
+          { name: { $regex: query.searchTerm, $options: 'i' } },
+          { type: { $regex: query.searchTerm, $options: 'i' } },
+        ],
+      },
+    ];
+  }
 
   const queryBuild = new QueryBuilder(
     Category.find(baseFilter).populate({
@@ -74,7 +87,8 @@ const getAllCategories = async (userId: string, query: ICategoryQuery) => {
   );
 
   const built = queryBuild
-    // .search(CATEGORY_SEARCHABLE_FIELDS)
+    // .search(CATEGORY_SEARCHABLE_FIELDS) ❌
+    .filter()
     .sort()
     .paginate();
 

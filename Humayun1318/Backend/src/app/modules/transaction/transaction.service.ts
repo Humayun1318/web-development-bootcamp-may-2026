@@ -167,12 +167,12 @@ const updateTransaction = async (
 
     // Re-check type match using the EXISTING transaction type
     // (type itself is not updatable — see validation schema comment).
-    if (category.type !== transaction.type) {
-      throw new AppError(
-        HTTP_STATUS.BAD_REQUEST,
-        `Category type "${category.type}" does not match this transaction's type "${transaction.type}"`,
-      );
-    }
+    // if (category.type !== transaction.type) {
+    //   throw new AppError(
+    //     HTTP_STATUS.BAD_REQUEST,
+    //     `Category type "${category.type}" does not match this transaction's type "${transaction.type}"`,
+    //   );
+    // }
     payload.categoryName = category.name;
   }
 

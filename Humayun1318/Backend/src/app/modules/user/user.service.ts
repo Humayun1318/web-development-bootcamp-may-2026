@@ -21,6 +21,13 @@ const register = async (payload: IRegisterPayload & { auths?: IAuthEntry[] }) =>
   // Check for duplicate email before hitting the unique index.
   const emailTaken = await User.isEmailTaken(payload.email);
   if (emailTaken) {
+    const existingUser = await User.findOne({ email: payload.email });
+    if (existingUser?.status === UserStatus.DELETED) {
+      throw new AppError(
+        HTTP_STATUS.BAD_REQUEST,
+        'An account with this email address was previously deleted. Please contact support if you believe this is a mistake.',
+      );
+    }
     throw new AppError(HTTP_STATUS.CONFLICT, 'An account with this email address already exists');
   }
 
