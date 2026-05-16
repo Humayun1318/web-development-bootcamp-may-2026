@@ -107,7 +107,7 @@ Before you begin, make sure you have the following installed:
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/humayun1318/Frontend.git
+git clone https://github.com/Humayun1318/web-development-bootcamp-may-2026.git
 cd Frontend
 ```
 
@@ -133,6 +133,7 @@ Then open `.env` and fill in your values (see Environment Setup below).
 
 ```bash
 npm run dev
+or bun run dev
 ```
 
 The app will be running at `http://localhost:5173`
@@ -166,19 +167,17 @@ VITE_BASE_URL=http://localhost:5000/api/v1
 
 ```bash
 # Start development server (hot reload)
-npm run dev
+bun run dev
 
 # Build for production
-npm run build
+bun run build
 
 # Preview production build locally
-npm run preview
+bun run preview
 
 # Run ESLint checks
-npm run lint
+bun run lint
 
-# Auto-fix lint errors
-npm run lint --fix
 ```
 
 ---
@@ -282,7 +281,6 @@ Frontend/
 /                          → Landing / redirect
 /login                     → Login page (email + Google)
 /register                  → Registration page
-/verify                    → Email verification page
 
 /user/                     → User dashboard layout (protected)
   dashboard                → Overview: charts, summary, spending
@@ -503,7 +501,7 @@ const form = useForm({ resolver: zodResolver(schema) });
 Build the project for production:
 
 ```bash
-npm run build
+bun run build
 ```
 
 The output will be in the `dist/` folder. Deploy it to any static hosting platform:
