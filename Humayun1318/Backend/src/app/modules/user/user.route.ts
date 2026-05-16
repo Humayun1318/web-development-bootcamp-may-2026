@@ -40,6 +40,8 @@ router.delete(
 // ─────────────────────────────────────────────
 // Admin Routes
 // ─────────────────────────────────────────────
+router.get('/analytics', authenticate(UserRole.ADMIN), userController.getAnalytics);
+
 router.get('/', authenticate(UserRole.ADMIN), userController.getAllUsers);
 
 router.get('/:id', authenticate(UserRole.ADMIN), userController.getUserById);

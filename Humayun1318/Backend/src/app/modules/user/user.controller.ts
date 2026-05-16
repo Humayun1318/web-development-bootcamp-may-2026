@@ -125,6 +125,20 @@ const updateUserStatus = catchAsync(async (req: Request, res: Response) => {
 });
 
 // ─────────────────────────────────────────────
+// Admin: Get Analytics
+// ─────────────────────────────────────────────
+const getAnalytics = catchAsync(async (_req: Request, res: Response) => {
+  const analytics = await userService.getAnalytics();
+
+  sendResponse(res, {
+    statusCode: HTTP_STATUS.OK,
+    success: true,
+    message: 'Analytics retrieved successfully',
+    data: analytics,
+  });
+});
+
+// ─────────────────────────────────────────────
 // EXPORT
 // ─────────────────────────────────────────────
 export const userController = {
@@ -136,4 +150,5 @@ export const userController = {
   getAllUsers,
   getUserById,
   updateUserStatus,
+  getAnalytics,
 };

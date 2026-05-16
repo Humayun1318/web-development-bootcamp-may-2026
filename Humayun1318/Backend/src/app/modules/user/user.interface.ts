@@ -117,3 +117,13 @@ export interface IUserQuery {
 export type IUserPublicProfile = Omit<IUser, 'password'> & {
   id: string;
 };
+
+/** Admin analytics data response. */
+export interface IUserAnalytics {
+  totalUsers: number;
+  activeUsers: number;
+  suspendedUsers: number;
+  deletedUsers: number;
+  totalAdmins: number;
+  systemStatus: 'healthy' | 'warning';
+}

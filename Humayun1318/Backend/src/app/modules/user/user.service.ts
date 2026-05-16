@@ -7,6 +7,7 @@ import type {
   IUpdateProfilePayload,
   IUserDocument,
   IUserQuery,
+  IUserAnalytics,
 } from './user.interface';
 import { AuthProvider } from './user.interface';
 import AppError from '../../errorHelpers/AppError';
@@ -222,6 +223,36 @@ const updateUserStatus = async (targetUserId: string, status: string): Promise<I
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Admin: getAnalytics — retrieve system analytics about users
+// ─────────────────────────────────────────────────────────────────────────────
+const getAnalytics = async (): Promise<IUserAnalytics> => {
+  // Execute all count operations in parallel for better performance
+  const [totalUsers, activeUsers, suspendedUsers, deletedUsers, totalAdmins] = await Promise.all([
+    User.countDocuments(),
+    User.countDocuments({ status: UserStatus.ACTIVE }),
+    User.countDocuments({ status: UserStatus.SUSPENDED }),
+    User.countDocuments({ status: UserStatus.DELETED }),
+    User.countDocuments({ role: 'admin' }),
+  ]);
+
+  // Determine system status based on suspended/deleted users ratio
+  const problemUsers = suspendedUsers + deletedUsers;
+  const problemRatio = totalUsers > 0 ? problemUsers / totalUsers : 0;
+
+  // If more than 20% of users are suspended or deleted, show warning
+  const systemStatus = problemRatio > 0.2 ? 'warning' : 'healthy';
+
+  return {
+    totalUsers,
+    activeUsers,
+    suspendedUsers,
+    deletedUsers,
+    totalAdmins,
+    systemStatus,
+  };
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // Export
 // ─────────────────────────────────────────────────────────────────────────────
 export const userService = {
@@ -233,4 +264,5 @@ export const userService = {
   getAllUsers,
   getUserById,
   updateUserStatus,
+  getAnalytics,
 };
