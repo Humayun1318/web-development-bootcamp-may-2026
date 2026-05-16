@@ -85,13 +85,14 @@ const deleteOwnAccount = catchAsync(async (req: Request, res: Response) => {
 // Admin: Get All Users
 // ─────────────────────────────────────────────
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const result = await userService.getAllUsers(req.query);
+  const { data, meta } = await userService.getAllUsers(req.query);
 
   sendResponse(res, {
     statusCode: HTTP_STATUS.OK,
     success: true,
     message: 'Users retrieved successfully',
-    data: result,
+    data: data,
+    meta,
   });
 });
 

@@ -109,7 +109,7 @@ export interface IChangePasswordPayload {
 export interface IUserQuery {
   role?: UserRoleType;
   status?: UserStatusType;
-  search?: string; // matches name or email
+  searchTerm?: string; // matches name or email
   page?: number;
   limit?: number;
 }

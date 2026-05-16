@@ -1,4 +1,4 @@
-import { USER_QUERY_DEFAULTS, UserStatus } from './user.constants';
+import { USER_SEARCHABLE_FIELDS, UserStatus } from './user.constants';
 import type {
   IAuthEntry,
   IAuthTokens,
@@ -13,6 +13,7 @@ import AppError from '../../errorHelpers/AppError';
 import User from './user.models';
 import { HTTP_STATUS } from '../../utils/HTTP_STATUS_CODE';
 import { createUserTokens } from '../../utils/userTokens';
+import { QueryBuilder } from '../../builder/QueryBuilder';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // register
@@ -36,11 +37,11 @@ const register = async (payload: IRegisterPayload & { auths?: IAuthEntry[] }) =>
     provider: AuthProvider.LOCAL,
     providerId: payload?.email,
   })) || [
-    {
-      provider: AuthProvider.LOCAL,
-      providerId: payload?.email,
-    },
-  ];
+      {
+        provider: AuthProvider.LOCAL,
+        providerId: payload?.email,
+      },
+    ];
 
   // //check if CREDENTIALS provider exists
   const hasCredentialsProvider = payload.auths.some((auth) => auth.provider === AuthProvider.LOCAL);
@@ -164,42 +165,31 @@ const deleteOwnAccount = async (userId: string, password: string): Promise<void>
 // ─────────────────────────────────────────────────────────────────────────────
 const getAllUsers = async (
   query: IUserQuery,
-): Promise<{ data: IUserDocument[]; total: number }> => {
-  const {
-    role,
-    status,
-    search,
-    page = USER_QUERY_DEFAULTS.PAGE,
-    limit = USER_QUERY_DEFAULTS.LIMIT,
-  } = query;
+) => {
+  const rawQuery = {
+    ...query,
+  } as unknown as Record<string, string>;
 
-  const sanitisedLimit = Math.min(limit, USER_QUERY_DEFAULTS.MAX_LIMIT);
-  const skip = (page - 1) * sanitisedLimit;
+  const queryBuilder = new QueryBuilder(
+    User.find(),
+    rawQuery,
+  );
 
-  const filter: Record<string, unknown> = {};
+  const built = queryBuilder
+    .search(USER_SEARCHABLE_FIELDS) // Define USER_SEARCHABLE_FIELDS = ['name', 'email']
+    .filter() // This will handle role, status filters automatically
+    .sort()
+    .paginate();
 
-  if (role) filter.role = role;
-  if (status) filter.status = status;
-
-  // Search across name and email using a case-insensitive regex.
-  // For production scale, replace with a $text index search.
-  if (search) {
-    filter.$or = [
-      { name: { $regex: search, $options: 'i' } },
-      { email: { $regex: search, $options: 'i' } },
-    ];
-  }
-
-  const [data, total] = await Promise.all([
-    User.find(filter)
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(sanitisedLimit)
-      .lean<IUserDocument[]>(),
-    User.countDocuments(filter),
+  const [data, meta] = await Promise.all([
+    built.build().lean<IUserDocument[]>(),
+    queryBuilder.getMeta(),
   ]);
 
-  return { data, total };
+  return {
+    data,
+    meta,
+  };
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

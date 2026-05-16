@@ -74,3 +74,5 @@ export const USER_QUERY_DEFAULTS = {
   LIMIT: 20,
   MAX_LIMIT: 100,
 } as const;
+
+export const USER_SEARCHABLE_FIELDS = ['name', 'email']
