@@ -1,31 +1,13 @@
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { CalendarDays, Mail, Globe, ShieldCheck, ShieldAlert } from "lucide-react";
-import { IAuth, IUser } from "@/types";
+import { IUser } from "@/types";
 import { getInitials } from "@/utils/getInitials";
+import { formatDate } from "@/utils/formatDate";
+import { getProviderLabel } from "@/utils/getProviderLabel";
 
 interface ProfileInfoCardProps {
   user: IUser;
-}
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-
-
-function formatDate(iso: string) {
-  return new Date(iso).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
-}
-
-function getProviderLabel(auths: IAuth[]) {
-  const providers = auths.map((a) => a.provider);
-  if (providers.includes("google") && providers.includes("local"))
-    return "Google + Password";
-  if (providers.includes("google")) return "Google";
-  return "Email & Password";
 }
 
 // ─── Component ────────────────────────────────────────────────────────────────

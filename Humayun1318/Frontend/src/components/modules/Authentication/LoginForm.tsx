@@ -12,7 +12,8 @@ import { Input } from "@/components/ui/input";
 import config from "@/config";
 import { role } from "@/constants/role";
 import { cn } from "@/lib/utils";
-import { useLoginMutation } from "@/redux/features/auth/auth.api";
+import { authApi, useLoginMutation } from "@/redux/features/auth/auth.api";
+import { useAppDispatch } from "@/redux/hook";
 import { TRole } from "@/types";
 import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router";
@@ -23,12 +24,13 @@ export function LoginForm({
   ...props
 }: React.HTMLAttributes<HTMLDivElement>) {
   const navigate = useNavigate();
+  const dispatch = useAppDispatch();
 
   // form
   const form = useForm({
     //! For development only
     defaultValues: {
-      email: "humayun@gmail.com",
+      email: "humayun19@gmail.com",
       password: "Pass12345",
     },
   });
@@ -42,6 +44,8 @@ export function LoginForm({
       const res = await login(data).unwrap();
 
       if (res.success) {
+        dispatch(authApi.util.invalidateTags(["USER"]));
+
         toast.success("Logged in successfully", {
           id: toastId,
           position: "top-center",

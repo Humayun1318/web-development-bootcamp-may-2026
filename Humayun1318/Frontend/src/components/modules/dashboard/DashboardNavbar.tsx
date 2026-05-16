@@ -18,7 +18,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Settings, LogOut, UserCircle, Shield } from "lucide-react";
+import {
+  Settings,
+  LogOut,
+  UserCircle,
+  Shield,
+  BarChart3,
+  Users,
+  Flame,
+} from "lucide-react";
 import { getInitials } from "@/utils/getInitials";
 
 export default function DashboardNavbar() {
@@ -51,18 +59,7 @@ export default function DashboardNavbar() {
     }
   };
   const pageTitle = getDashboardPageTitle(location.pathname);
-  const handleProfile = () => {
-    navigate("/user/profile");
-  };
-
-  const handleSettings = () => {
-    navigate("/user/settings");
-  };
-
-  const handlePrivacyPolicy = () => {
-    navigate("/user/privacy");
-  };
-
+  const isAdmin = userData?.role === "admin";
   return (
     <div>
       <header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b px-4">
@@ -83,16 +80,7 @@ export default function DashboardNavbar() {
         {/* Right side */}
         <div className="flex items-center gap-2">
           <ModeToggle />
-          {/* {userData?.email && (
-            <Button
-              onClick={handleLogout}
-              variant="outline"
-              disabled={logoutLoading}
-              className="text-sm cursor-pointer"
-            >
-              {logoutLoading ? "Logging out..." : "Logout"}
-            </Button>
-          )} */}
+
           {userData?.email && (
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -123,28 +111,62 @@ export default function DashboardNavbar() {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem
-                  onClick={handleProfile}
-                  className="cursor-pointer"
-                >
-                  <UserCircle className="mr-2 h-4 w-4" />
-                  <span>Profile</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handleSettings}
-                  className="cursor-pointer"
-                >
-                  <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem
-                  onClick={handlePrivacyPolicy}
-                  className="cursor-pointer"
-                >
-                  <Shield className="mr-2 h-4 w-4" />
-                  <span>Privacy Policy</span>
-                </DropdownMenuItem>
+
+                {isAdmin ? (
+                  // Admin dropdown - only 3 routes
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/admin/analytics")}
+                      className="cursor-pointer"
+                    >
+                      <BarChart3 className="mr-2 h-4 w-4" />
+                      <span>Analytics</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/admin/all-users")}
+                      className="cursor-pointer"
+                    >
+                      <Users className="mr-2 h-4 w-4" />
+                      <span>All Users</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/admin/corn-job")}
+                      className="cursor-pointer"
+                    >
+                      <Flame className="mr-2 h-4 w-4" />
+                      <span>System</span>
+                    </DropdownMenuItem>
+                  </>
+                ) : (
+                  // User dropdown - profile, settings, privacy
+                  <>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/user/profile")}
+                      className="cursor-pointer"
+                    >
+                      <UserCircle className="mr-2 h-4 w-4" />
+                      <span>Profile</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/user/settings")}
+                      className="cursor-pointer"
+                    >
+                      <Settings className="mr-2 h-4 w-4" />
+                      <span>Settings</span>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem
+                      onClick={() => navigate("/user/privacy")}
+                      className="cursor-pointer"
+                    >
+                      <Shield className="mr-2 h-4 w-4" />
+                      <span>Privacy Policy</span>
+                    </DropdownMenuItem>
+                  </>
+                )}
+
                 <DropdownMenuSeparator />
+
+                {/* Logout button for both */}
                 <DropdownMenuItem
                   onClick={handleLogout}
                   disabled={logoutLoading}

@@ -7,10 +7,11 @@ import { createBrowserRouter, Navigate } from "react-router";
 import { adminSidebarItems } from "./adminSidebarItems";
 import { userSidebarItems } from "./userSidebarItems";
 import { withAuth } from "@/utils/withAuth";
-import Unauthorized from "@/pages/Unauthorized";
 import { role } from "@/constants/role";
 import { TRole } from "@/types";
 import Homepage from "@/pages/Homepage";
+import UnauthorizedPage from "@/pages/UnauthorizedPage";
+import NotFoundPage from "@/pages/NotFoundPage";
 
 export const router = createBrowserRouter([
   {
@@ -48,7 +49,11 @@ export const router = createBrowserRouter([
     path: "/register",
   },
   {
-    Component: Unauthorized,
+    Component: UnauthorizedPage,
     path: "/unauthorized",
+  },
+  {
+    path: "*",
+    element: <NotFoundPage />,
   },
 ]);
