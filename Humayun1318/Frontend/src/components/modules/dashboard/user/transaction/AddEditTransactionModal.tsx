@@ -27,7 +27,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
-import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useGetAllCategoriesQuery } from "@/redux/features/category/category.api";
@@ -35,7 +34,6 @@ import {
   ICategory,
   ITransaction,
   PAYMENT_METHOD,
-  RECURRENCE_FREQUENCY,
   TRANSACTION_TYPE,
 } from "@/types";
 import {

@@ -36,7 +36,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { toast } from "sonner";
 import { useEffect } from "react";
 import { useUpdateUserStatusMutation } from "@/redux/features/admin/admin.api";
-import { AdminUser, UserStatus } from "@/types/admin.types";
+import { AdminUser } from "@/types/admin.types";
 import { getInitials } from "@/utils/getInitials";
 import { getProviderLabel } from "@/utils/getProviderLabel";
 import { formatDate } from "@/utils/formatDate";

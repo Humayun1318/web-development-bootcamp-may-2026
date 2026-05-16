@@ -39,7 +39,7 @@ const getCategoryIcon = (category: string): LucideIcon => {
 };
 
 // Calculate insights from real transactions data
-const calculateInsightsFromTransactions = (transactions: any[], userCurrency: string) => {
+const calculateInsightsFromTransactions = (transactions: any[], _userCurrency: string) => {
   if (!transactions || transactions.length === 0) {
     return {
       hasData: false,

@@ -3,6 +3,7 @@ import AnimatedLoginIllustration from "@/assets/icons/AnimatedLoginIllustration"
 import AuthLayout from "@/components/layout/Authlayout";
 import { LoginForm } from "@/components/modules/Authentication/LoginForm";
 import { toast } from "sonner";
+import LoginCredentials from "@/components/LoginCredentials";
 
 export default function Login() {
   useEffect(() => {
@@ -30,6 +31,7 @@ export default function Login() {
       illustrationSide="right"
     >
       <LoginForm />
+      <LoginCredentials />
     </AuthLayout>
   );
 }

@@ -30,14 +30,26 @@ export function LoginForm({
   const form = useForm({
     //! For development only
     defaultValues: {
-      email: "humayun19@gmail.com",
-      password: "Pass12345",
+      email: "",
+      password: "",
     },
   });
 
   const [login, { isLoading }] = useLoginMutation();
 
   const onSubmit: SubmitHandler<FieldValues> = async (data) => {
+    if (!data.email || !data.password) {
+      toast.error("Please fill in all fields", {
+        position: "top-center",
+      });
+      return;
+    }
+    if(data?.password?.length < 8) {
+      toast.error("Password must be at least 8 characters", {
+        position: "top-center",
+      });
+      return;
+    }
     const toastId = toast.loading("Logging in...", { position: "top-center" });
 
     try {
@@ -60,10 +72,13 @@ export function LoginForm({
     } catch (err) {
       const errorMessage = (err as any)?.data?.message;
       if (errorMessage === "User is deleted") {
-        toast.error("Your account has been deleted, if you think this is a mistake, please contact support.", {
-          id: toastId,
-          position: "top-center",
-        });
+        toast.error(
+          "Your account has been deleted, if you think this is a mistake, please contact support.",
+          {
+            id: toastId,
+            position: "top-center",
+          },
+        );
       } else if (errorMessage === "Password does not match") {
         toast.error("Invalid credentials", {
           id: toastId,
